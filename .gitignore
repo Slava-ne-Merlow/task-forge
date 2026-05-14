@@ -49,3 +49,4 @@ backend/**/__pycache__/
 *.pyc
 backend/*.db
 backend/*.db-journal
+.angular/
