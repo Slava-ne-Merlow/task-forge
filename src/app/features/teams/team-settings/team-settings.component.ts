@@ -1,0 +1,83 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  OnInit,
+  signal,
+} from '@angular/core';
+import { Clipboard } from '@angular/cdk/clipboard';
+import { Router } from '@angular/router';
+import { TuiButton, TuiIcon } from '@taiga-ui/core';
+import { TuiBadge } from '@taiga-ui/kit';
+
+import { AuthStore } from '../../../core/auth/auth.store';
+import { TeamMember, TeamRole } from '../../../core/models/team.model';
+import { TeamsStore } from '../teams.store';
+
+@Component({
+  selector: 'app-team-settings',
+  templateUrl: './team-settings.component.html',
+  styleUrl: './team-settings.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [TuiButton, TuiBadge, TuiIcon],
+})
+export class TeamSettingsComponent implements OnInit {
+  readonly teamId = input.required<string>();
+
+  protected readonly teamsStore = inject(TeamsStore);
+  protected readonly authStore = inject(AuthStore);
+  private readonly router = inject(Router);
+  private readonly clipboard = inject(Clipboard);
+
+  protected readonly inviteLink = signal<string | null>(null);
+  protected readonly linkCopied = signal(false);
+
+  protected readonly currentUserRole = computed(() => {
+    const userId = this.authStore.user()?.id;
+    return this.teamsStore.members().find((m) => m.user.id === userId)?.role ?? null;
+  });
+
+  protected readonly isOwner = computed(() => this.currentUserRole() === 'owner');
+  protected readonly canInvite = computed(
+    () => this.currentUserRole() === 'owner' || this.currentUserRole() === 'lead',
+  );
+
+  protected readonly roleOptions: TeamRole[] = ['lead', 'developer'];
+
+  ngOnInit(): void {
+    this.teamsStore.loadTeam(this.teamId());
+    this.teamsStore.loadMembers(this.teamId());
+  }
+
+  protected generateInviteLink(): void {
+    this.teamsStore.createInvitation({
+      teamId: this.teamId(),
+      onSuccess: (inv) => {
+        const link = `${window.location.origin}/auth/invite/${inv.token}`;
+        this.inviteLink.set(link);
+      },
+    });
+  }
+
+  protected copyLink(): void {
+    const link = this.inviteLink();
+    if (!link) return;
+    this.clipboard.copy(link);
+    this.linkCopied.set(true);
+    setTimeout(() => this.linkCopied.set(false), 2000);
+  }
+
+  protected changeRole(member: TeamMember, role: TeamRole): void {
+    this.teamsStore.updateMemberRole({ teamId: this.teamId(), userId: member.user.id, role });
+  }
+
+  protected removeMember(member: TeamMember): void {
+    this.teamsStore.removeMember({ teamId: this.teamId(), userId: member.user.id });
+  }
+
+  protected goBack(): void {
+    this.router.navigate(['/teams']);
+  }
+}

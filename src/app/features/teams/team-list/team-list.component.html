@@ -1,0 +1,100 @@
+<div class="teams-page">
+  <div class="teams-page__header">
+    <div>
+      <h1 class="teams-page__title">My Teams</h1>
+      <p class="teams-page__subtitle">Teams you own or belong to</p>
+    </div>
+
+    <button
+      tuiButton
+      type="button"
+      appearance="primary"
+      size="m"
+      (click)="openCreate()"
+      aria-label="Create new team"
+    >
+      <tui-icon icon="@tui.plus" />
+      New team
+    </button>
+  </div>
+
+  @if (showCreateForm()) {
+    <form
+      class="create-team-card"
+      [formGroup]="createForm"
+      (ngSubmit)="submitCreate()"
+      novalidate
+      aria-label="Create team form"
+    >
+      <h2 class="create-team-card__title">New team</h2>
+
+      <tui-textfield>
+        <label tuiLabel for="create-team-name">Team name</label>
+        <input
+          id="create-team-name"
+          tuiTextfield
+          type="text"
+          formControlName="name"
+          placeholder="e.g. Frontend Team"
+        />
+        <tui-error formControlName="name" [order]="['required', 'minlength', 'maxlength']" />
+      </tui-textfield>
+
+      <div class="create-team-card__actions">
+        <button tuiButton type="button" appearance="flat" size="m" (click)="cancelCreate()">
+          Cancel
+        </button>
+        <button
+          tuiButton
+          type="submit"
+          appearance="primary"
+          size="m"
+          [loading]="teamsStore.loading()"
+        >
+          Create
+        </button>
+      </div>
+    </form>
+  }
+
+  @if (teamsStore.error()) {
+    <div class="teams-page__error" role="alert">{{ teamsStore.error() }}</div>
+  }
+
+  @if (teamsStore.loading() && !teamsStore.teams().length) {
+    <div class="teams-page__loader" aria-label="Loading teams">
+      <span class="loader-spinner" aria-hidden="true"></span>
+    </div>
+  } @else if (!teamsStore.teams().length) {
+    <div class="teams-page__empty">
+      <p>You don't have any teams yet.</p>
+      <p>Create one to get started!</p>
+    </div>
+  } @else {
+    <ul class="teams-list" aria-label="Teams list">
+      @for (team of teamsStore.teams(); track team.id) {
+        <li class="team-card" (click)="goToSettings(team.id)">
+          <div class="team-card__info">
+            <span class="team-card__name">{{ team.name }}</span>
+            <span
+              tuiBadge
+              [appearance]="team.myRole === 'owner' ? 'primary' : team.myRole === 'lead' ? 'info' : 'neutral'"
+              size="s"
+            >{{ team.myRole }}</span>
+          </div>
+          <button
+            tuiButton
+            type="button"
+            appearance="ghost"
+            size="s"
+            (click)="$event.stopPropagation(); goToSettings(team.id)"
+            [attr.aria-label]="'Settings for ' + team.name"
+          >
+            <tui-icon icon="@tui.settings" />
+            Settings
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</div>

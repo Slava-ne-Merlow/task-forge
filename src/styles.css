@@ -1,0 +1,25 @@
+@import '@taiga-ui/design-tokens/palette/light.css';
+@import '@taiga-ui/design-tokens/palette/animation.css';
+@import '@taiga-ui/design-tokens/palette/shadow.css';
+@import '@taiga-ui/design-tokens/palette/gradient.css';
+@import '@taiga-ui/design-tokens/fonts/desktop.css';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: var(--tui-font-text-m);
+  background: var(--tui-background-base);
+  color: var(--tui-text-primary);
+}
+
+a {
+  color: var(--tui-text-action);
+  text-decoration: none;
+}

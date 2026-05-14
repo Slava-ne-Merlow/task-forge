@@ -1,0 +1,129 @@
+<div class="auth-page">
+  <div class="auth-card">
+
+    @switch (pageState()) {
+      @case ('loading') {
+        <div class="auth-card__loader" aria-label="Loading invitation">
+          <span class="loader-spinner" aria-hidden="true"></span>
+          <p>Loading invitation…</p>
+        </div>
+      }
+
+      @case ('error') {
+        <div class="auth-card__header">
+          <h1 class="auth-card__title">Invalid link</h1>
+          <p class="auth-card__subtitle">This invitation link is not valid.</p>
+        </div>
+        <a routerLink="/auth/login" tuiButton appearance="primary" size="l" class="auth-card__submit">
+          Go to login
+        </a>
+      }
+
+      @case ('used') {
+        <div class="auth-card__header">
+          <h1 class="auth-card__title">Link expired</h1>
+          <p class="auth-card__subtitle">This invitation has already been used or expired.</p>
+        </div>
+        <a routerLink="/auth/login" tuiButton appearance="primary" size="l" class="auth-card__submit">
+          Go to login
+        </a>
+      }
+
+      @case ('loaded') {
+        <div class="auth-card__header">
+          <h1 class="auth-card__title">You're invited!</h1>
+          <p class="auth-card__subtitle">
+            <strong>{{ invitation()!.createdBy.name }}</strong> invites you to join
+            <strong>{{ invitation()!.teamName }}</strong>
+          </p>
+        </div>
+
+        @if (submitError() || authStore.error()) {
+          <div class="auth-card__error" role="alert">
+            {{ submitError() || authStore.error() }}
+          </div>
+        }
+
+        @if (isLoggedIn()) {
+          <p class="auth-card__info">
+            You are signed in as <strong>{{ authStore.user()!.name }}</strong>.
+          </p>
+          <button
+            tuiButton
+            type="button"
+            appearance="primary"
+            size="l"
+            class="auth-card__submit"
+            [loading]="authStore.loading()"
+            (click)="joinAsExistingUser()"
+          >
+            Join {{ invitation()!.teamName }}
+          </button>
+        } @else {
+          <form
+            class="auth-card__form"
+            [formGroup]="form"
+            (ngSubmit)="registerAndJoin()"
+            novalidate
+          >
+            <tui-textfield>
+              <label tuiLabel for="inv-email">Email</label>
+              <input
+                id="inv-email"
+                tuiTextfield
+                type="email"
+                formControlName="email"
+                autocomplete="email"
+                placeholder="you@example.com"
+              />
+              <tui-error formControlName="email" [order]="['required', 'email']" />
+            </tui-textfield>
+
+            <tui-textfield>
+              <label tuiLabel for="inv-name">Your name</label>
+              <input
+                id="inv-name"
+                tuiTextfield
+                type="text"
+                formControlName="name"
+                autocomplete="name"
+                placeholder="John Doe"
+              />
+              <tui-error formControlName="name" [order]="['required', 'minlength']" />
+            </tui-textfield>
+
+            <tui-textfield>
+              <label tuiLabel for="inv-password">Create password</label>
+              <input
+                id="inv-password"
+                tuiTextfield
+                type="password"
+                formControlName="password"
+                autocomplete="new-password"
+                placeholder="Min. 6 characters"
+              />
+              <tui-error formControlName="password" [order]="['required', 'minlength']" />
+            </tui-textfield>
+
+            <button
+              tuiButton
+              type="submit"
+              appearance="primary"
+              size="l"
+              class="auth-card__submit"
+              [loading]="authStore.loading()"
+            >
+              Join &amp; Create account
+            </button>
+          </form>
+
+          <p class="auth-card__footer">
+            Already have an account?
+            <a routerLink="/auth/login">Sign in</a>
+          </p>
+        }
+      }
+    }
+
+  </div>
+</div>

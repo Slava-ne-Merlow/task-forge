@@ -1,0 +1,137 @@
+<div class="settings-page">
+  <div class="settings-page__header">
+    <button
+      tuiButton
+      type="button"
+      appearance="ghost"
+      size="s"
+      (click)="goBack()"
+      aria-label="Back to teams"
+    >
+      <tui-icon icon="@tui.arrow-left" />
+      Back
+    </button>
+
+    @if (teamsStore.currentTeam(); as team) {
+      <div class="settings-page__title-wrap">
+        <h1 class="settings-page__title">{{ team.name }}</h1>
+        <span
+          tuiBadge
+          [appearance]="team.myRole === 'owner' ? 'primary' : team.myRole === 'lead' ? 'info' : 'neutral'"
+          size="s"
+        >
+          {{ team.myRole }}
+        </span>
+      </div>
+    }
+  </div>
+
+  @if (teamsStore.error()) {
+    <div class="settings-page__error" role="alert">
+      {{ teamsStore.error() }}
+    </div>
+  }
+
+  <!-- Invite Section -->
+  @if (canInvite()) {
+    <section class="settings-section" aria-labelledby="invite-heading">
+      <h2 id="invite-heading" class="settings-section__title">Invite members</h2>
+      <p class="settings-section__desc">
+        Generate a single-use invite link. New members join as <strong>Developer</strong>.
+      </p>
+
+      <button
+        tuiButton
+        type="button"
+        appearance="primary"
+        size="m"
+        (click)="generateInviteLink()"
+      >
+        <tui-icon icon="@tui.link" />
+        Generate invite link
+      </button>
+
+      @if (inviteLink()) {
+        <div class="invite-link-box" role="region" aria-label="Invite link">
+          <code class="invite-link-box__url">{{ inviteLink() }}</code>
+          <button
+            tuiButton
+            type="button"
+            appearance="flat"
+            size="s"
+            (click)="copyLink()"
+            [attr.aria-label]="linkCopied() ? 'Copied!' : 'Copy invite link'"
+          >
+            <tui-icon [icon]="linkCopied() ? '@tui.check' : '@tui.copy'" />
+            {{ linkCopied() ? 'Copied!' : 'Copy' }}
+          </button>
+        </div>
+      }
+    </section>
+  }
+
+  <!-- Members Section -->
+  <section class="settings-section" aria-labelledby="members-heading">
+    <h2 id="members-heading" class="settings-section__title">
+      Members
+      <span class="settings-section__count">{{ teamsStore.members().length }}</span>
+    </h2>
+
+    @if (teamsStore.membersLoading()) {
+      <div class="settings-page__loader" aria-label="Loading members">
+        <span class="loader-spinner" aria-hidden="true"></span>
+      </div>
+    } @else {
+      <ul class="members-list" aria-label="Team members">
+        @for (member of teamsStore.members(); track member.id) {
+          <li class="member-card">
+            <div class="member-card__avatar" aria-hidden="true">
+              {{ member.user.name.charAt(0).toUpperCase() }}
+            </div>
+
+            <div class="member-card__info">
+              <span class="member-card__name">{{ member.user.name }}</span>
+              <span class="member-card__email">{{ member.user.email }}</span>
+            </div>
+
+            <div class="member-card__role">
+              @if (isOwner() && member.role !== 'owner') {
+                <select
+                  class="member-card__role-select"
+                  [value]="member.role"
+                  (change)="changeRole(member, $any($event.target).value)"
+                  [attr.aria-label]="'Role for ' + member.user.name"
+                >
+                  @for (role of roleOptions; track role) {
+                    <option [value]="role" [selected]="role === member.role">{{ role }}</option>
+                  }
+                </select>
+              } @else {
+                <span
+                  tuiBadge
+                  [appearance]="member.role === 'owner' ? 'primary' : member.role === 'lead' ? 'info' : 'neutral'"
+                  size="s"
+                >
+                  {{ member.role }}
+                </span>
+              }
+            </div>
+
+            @if (isOwner() && member.role !== 'owner') {
+              <button
+                tuiButton
+                type="button"
+                appearance="destructive"
+                size="s"
+                (click)="removeMember(member)"
+                [attr.aria-label]="'Remove ' + member.user.name + ' from team'"
+              >
+                <tui-icon icon="@tui.trash" />
+              </button>
+            }
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</div>
