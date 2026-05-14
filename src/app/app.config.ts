@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
-import { NG_EVENT_PLUGINS } from '@taiga-ui/event-plugins';
+import { provideTaiga } from '@taiga-ui/core';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/auth/auth.interceptor';
@@ -18,6 +18,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withInterceptors([authInterceptor])),
-    NG_EVENT_PLUGINS,
+    provideTaiga(),
   ],
 };
