@@ -7,8 +7,8 @@ import { Team, TeamMember, TeamRole } from '../models/team.model';
 import { User } from '../models/user.model';
 
 export interface AuthResponse {
-  access_token: string;
-  token_type: string;
+  accessToken: string;
+  tokenType: string;
   user: User;
 }
 

@@ -1,17 +1,35 @@
 from datetime import datetime
+from typing import Any
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, EmailStr
+from pydantic.alias_generators import to_camel
 
 from models import TeamRole
 
 
-class UserOut(BaseModel):
+class CamelModel(BaseModel):
+    """Base model: reads snake_case attrs from ORM, serialises as camelCase JSON."""
+
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+        from_attributes=True,
+    )
+
+    def model_dump(self, **kwargs: Any) -> dict[str, Any]:
+        kwargs.setdefault("by_alias", True)
+        return super().model_dump(**kwargs)
+
+    def model_dump_json(self, **kwargs: Any) -> str:
+        kwargs.setdefault("by_alias", True)
+        return super().model_dump_json(**kwargs)
+
+
+class UserOut(CamelModel):
     id: str
     email: str
     name: str
     created_at: datetime
-
-    model_config = {"from_attributes": True}
 
 
 class RegisterRequest(BaseModel):
@@ -25,7 +43,7 @@ class LoginRequest(BaseModel):
     password: str
 
 
-class TokenResponse(BaseModel):
+class TokenResponse(CamelModel):
     access_token: str
     token_type: str = "bearer"
     user: UserOut
@@ -35,29 +53,25 @@ class TeamCreate(BaseModel):
     name: str
 
 
-class TeamOut(BaseModel):
+class TeamOut(CamelModel):
     id: str
     name: str
     created_at: datetime
     my_role: TeamRole
 
-    model_config = {"from_attributes": True}
 
-
-class MemberOut(BaseModel):
+class MemberOut(CamelModel):
     id: str
     user: UserOut
     role: TeamRole
     joined_at: datetime
-
-    model_config = {"from_attributes": True}
 
 
 class RoleUpdate(BaseModel):
     role: TeamRole
 
 
-class InvitationOut(BaseModel):
+class InvitationOut(CamelModel):
     id: str
     token: str
     team_id: str
@@ -66,13 +80,6 @@ class InvitationOut(BaseModel):
     expires_at: datetime
     used_at: datetime | None = None
 
-    model_config = {"from_attributes": True}
-
 
 class InvitationCreate(BaseModel):
     expires_hours: int = 72
-
-
-class AcceptInvitationRequest(BaseModel):
-    name: str | None = None
-    password: str | None = None

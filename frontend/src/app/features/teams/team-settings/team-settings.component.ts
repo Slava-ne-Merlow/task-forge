@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { Router } from '@angular/router';
-import { TuiButton, TuiIcon } from '@taiga-ui/core';
+import { TuiButton, TuiDataList, TuiDropdown, TuiIcon } from '@taiga-ui/core';
 import { TuiBadge } from '@taiga-ui/kit';
 
 import { AuthStore } from '../../../core/auth/auth.store';
@@ -21,7 +21,7 @@ import { TeamsStore } from '../teams.store';
   templateUrl: './team-settings.component.html',
   styleUrl: './team-settings.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [TuiButton, TuiBadge, TuiIcon],
+  imports: [TuiButton, TuiBadge, TuiIcon, TuiDropdown, TuiDataList],
 })
 export class TeamSettingsComponent implements OnInit {
   readonly teamId = input.required<string>();
@@ -33,6 +33,7 @@ export class TeamSettingsComponent implements OnInit {
 
   protected readonly inviteLink = signal<string | null>(null);
   protected readonly linkCopied = signal(false);
+  protected readonly openRoleDropdown = signal<string | null>(null);
 
   protected readonly currentUserRole = computed(() => {
     const userId = this.authStore.user()?.id;
@@ -69,7 +70,16 @@ export class TeamSettingsComponent implements OnInit {
     setTimeout(() => this.linkCopied.set(false), 2000);
   }
 
+  protected isRoleDropdownOpen(memberId: string): boolean {
+    return this.openRoleDropdown() === memberId;
+  }
+
+  protected toggleRoleDropdown(memberId: string, open: boolean): void {
+    this.openRoleDropdown.set(open ? memberId : null);
+  }
+
   protected changeRole(member: TeamMember, role: TeamRole): void {
+    this.openRoleDropdown.set(null);
     this.teamsStore.updateMemberRole({ teamId: this.teamId(), userId: member.user.id, role });
   }
 

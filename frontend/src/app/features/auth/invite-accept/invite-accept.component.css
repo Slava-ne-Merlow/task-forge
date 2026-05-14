@@ -74,6 +74,20 @@
   font-weight: 500;
 }
 
+.auth-card__check-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--tui-status-positive-pale);
+  color: var(--tui-status-positive);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 auto 1rem;
+}
+
 .auth-card__loader {
   display: flex;
   flex-direction: column;

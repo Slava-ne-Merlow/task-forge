@@ -96,16 +96,36 @@
 
             <div class="member-card__role">
               @if (isOwner() && member.role !== 'owner') {
-                <select
-                  class="member-card__role-select"
-                  [value]="member.role"
-                  (change)="changeRole(member, $any($event.target).value)"
-                  [attr.aria-label]="'Role for ' + member.user.name"
+                <button
+                  tuiButton
+                  type="button"
+                  appearance="outline"
+                  size="s"
+                  class="member-card__role-btn"
+                  [tuiDropdown]="roleMenu"
+                  [tuiDropdownOpen]="isRoleDropdownOpen(member.id)"
+                  (tuiDropdownOpenChange)="toggleRoleDropdown(member.id, $event)"
+                  [attr.aria-label]="'Change role for ' + member.user.name"
+                  aria-haspopup="listbox"
                 >
-                  @for (role of roleOptions; track role) {
-                    <option [value]="role" [selected]="role === member.role">{{ role }}</option>
-                  }
-                </select>
+                  {{ member.role }}
+                  <tui-icon icon="@tui.chevron-down" />
+                </button>
+                <ng-template #roleMenu>
+                  <tui-data-list role="listbox">
+                    @for (role of roleOptions; track role) {
+                      <button
+                        tuiOption
+                        type="button"
+                        role="option"
+                        [class.active]="role === member.role"
+                        (click)="changeRole(member, role)"
+                      >
+                        {{ role }}
+                      </button>
+                    }
+                  </tui-data-list>
+                </ng-template>
               } @else {
                 <span
                   tuiBadge

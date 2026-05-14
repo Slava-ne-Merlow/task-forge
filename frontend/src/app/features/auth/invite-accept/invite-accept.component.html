@@ -2,6 +2,7 @@
   <div class="auth-card">
 
     @switch (pageState()) {
+
       @case ('loading') {
         <div class="auth-card__loader" aria-label="Loading invitation">
           <span class="loader-spinner" aria-hidden="true"></span>
@@ -22,7 +23,7 @@
       @case ('used') {
         <div class="auth-card__header">
           <h1 class="auth-card__title">Link expired</h1>
-          <p class="auth-card__subtitle">This invitation has already been used or expired.</p>
+          <p class="auth-card__subtitle">This invitation has already been used or has expired.</p>
         </div>
         <a routerLink="/auth/login" tuiButton appearance="primary" size="l" class="auth-card__submit">
           Go to login
@@ -31,100 +32,135 @@
 
       @case ('loaded') {
         @if (invitation(); as inv) {
-        <div class="auth-card__header">
-          <h1 class="auth-card__title">You're invited!</h1>
-          <p class="auth-card__subtitle">
-            <strong>{{ inv.createdBy.name }}</strong> invites you to join
-            <strong>{{ inv.teamName }}</strong>
-          </p>
-        </div>
 
-        @if (submitError() || authStore.error()) {
-          <div class="auth-card__error" role="alert">
-            {{ submitError() || authStore.error() }}
-          </div>
-        }
+          @if (!memberCheckDone()) {
+            <div class="auth-card__loader" aria-label="Loading">
+              <span class="loader-spinner" aria-hidden="true"></span>
+            </div>
 
-        @if (isLoggedIn()) {
-          <p class="auth-card__info">
-            You are signed in as <strong>{{ authStore.user()!.name }}</strong>.
-          </p>
-          <button
-            tuiButton
-            type="button"
-            appearance="primary"
-            size="l"
-            class="auth-card__submit"
-            [loading]="authStore.loading()"
-            (click)="joinAsExistingUser()"
-          >
-            Join {{ invitation()!.teamName }}
-          </button>
-        } @else {
-          <form
-            class="auth-card__form"
-            [formGroup]="form"
-            (ngSubmit)="registerAndJoin()"
-            novalidate
-          >
-            <tui-textfield>
-              <label tuiLabel for="inv-email">Email</label>
-              <input
-                id="inv-email"
-                tuiInput
-                type="email"
-                formControlName="email"
-                autocomplete="email"
-                placeholder="you@example.com"
-              />
-              <tui-error formControlName="email" [order]="['required', 'email']" />
-            </tui-textfield>
+          } @else if (isLoggedIn() && alreadyMember()) {
+            <div class="auth-card__header">
+              <div class="auth-card__check-icon" aria-hidden="true">✓</div>
+              <h1 class="auth-card__title">Already in team</h1>
+              <p class="auth-card__subtitle">
+                You are already a member of <strong>{{ inv.teamName }}</strong>.
+              </p>
+            </div>
+            <a routerLink="/teams" tuiButton appearance="primary" size="l" class="auth-card__submit">
+              Go to my teams
+            </a>
 
-            <tui-textfield>
-              <label tuiLabel for="inv-name">Your name</label>
-              <input
-                id="inv-name"
-                tuiInput
-                type="text"
-                formControlName="name"
-                autocomplete="name"
-                placeholder="John Doe"
-              />
-              <tui-error formControlName="name" [order]="['required', 'minlength']" />
-            </tui-textfield>
+          } @else if (isLoggedIn()) {
+            <div class="auth-card__header">
+              <h1 class="auth-card__title">You're invited!</h1>
+              <p class="auth-card__subtitle">
+                <strong>{{ inv.createdBy.name }}</strong> invites you to join
+                <strong>{{ inv.teamName }}</strong>
+              </p>
+            </div>
 
-            <tui-textfield>
-              <label tuiLabel for="inv-password">Create password</label>
-              <input
-                id="inv-password"
-                tuiInput
-                type="password"
-                formControlName="password"
-                autocomplete="new-password"
-                placeholder="Min. 6 characters"
-              />
-              <tui-error formControlName="password" [order]="['required', 'minlength']" />
-            </tui-textfield>
+            @if (submitError()) {
+              <div class="auth-card__error" role="alert">{{ submitError() }}</div>
+            }
 
+            <p class="auth-card__info">
+              Joining as <strong>{{ authStore.user()!.name }}</strong>
+            </p>
             <button
               tuiButton
-              type="submit"
+              type="button"
               appearance="primary"
               size="l"
               class="auth-card__submit"
-              [loading]="authStore.loading()"
+              [loading]="joining()"
+              (click)="joinAsExistingUser()"
             >
-              Join &amp; Create account
+              Join {{ inv.teamName }}
             </button>
-          </form>
 
-          <p class="auth-card__footer">
-            Already have an account?
-            <a routerLink="/auth/login">Sign in</a>
-          </p>
+            <p class="auth-card__footer">
+              Wrong account? <a routerLink="/auth/login">Switch account</a>
+            </p>
+
+          } @else {
+            <div class="auth-card__header">
+              <h1 class="auth-card__title">You're invited!</h1>
+              <p class="auth-card__subtitle">
+                <strong>{{ inv.createdBy.name }}</strong> invites you to join
+                <strong>{{ inv.teamName }}</strong>
+              </p>
+            </div>
+
+            @if (authStore.error()) {
+              <div class="auth-card__error" role="alert">{{ authStore.error() }}</div>
+            }
+
+            <form
+              class="auth-card__form"
+              [formGroup]="form"
+              (ngSubmit)="registerAndJoin()"
+              novalidate
+            >
+              <tui-textfield>
+                <label tuiLabel for="inv-email">Email</label>
+                <input
+                  id="inv-email"
+                  tuiInput
+                  type="email"
+                  formControlName="email"
+                  autocomplete="email"
+                  placeholder="you@example.com"
+                />
+                <tui-error formControlName="email" [order]="['required', 'email']" />
+              </tui-textfield>
+
+              <tui-textfield>
+                <label tuiLabel for="inv-name">Your name</label>
+                <input
+                  id="inv-name"
+                  tuiInput
+                  type="text"
+                  formControlName="name"
+                  autocomplete="name"
+                  placeholder="John Doe"
+                />
+                <tui-error formControlName="name" [order]="['required', 'minlength']" />
+              </tui-textfield>
+
+              <tui-textfield>
+                <label tuiLabel for="inv-password">Create password</label>
+                <input
+                  id="inv-password"
+                  tuiInput
+                  type="password"
+                  formControlName="password"
+                  autocomplete="new-password"
+                  placeholder="Min. 6 characters"
+                />
+                <tui-error formControlName="password" [order]="['required', 'minlength']" />
+              </tui-textfield>
+
+              <button
+                tuiButton
+                type="submit"
+                appearance="primary"
+                size="l"
+                class="auth-card__submit"
+                [loading]="authStore.loading()"
+              >
+                Create account &amp; Join
+              </button>
+            </form>
+
+            <p class="auth-card__footer">
+              Already have an account?
+              <a routerLink="/auth/login">Sign in</a>
+            </p>
+          }
+
         }
-        } <!-- end @if invitation -->
       }
+
     }
 
   </div>

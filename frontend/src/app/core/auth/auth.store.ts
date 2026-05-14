@@ -52,7 +52,7 @@ export const AuthStore = signalStore(
           api.login(email, password).pipe(
             tap({
               next: (res) => {
-                tokens.set(res.access_token);
+                tokens.set(res.accessToken);
                 patchState(store, { user: res.user, loading: false, error: null });
                 router.navigate(['/teams']);
               },
@@ -74,7 +74,7 @@ export const AuthStore = signalStore(
           api.register(email, name, password).pipe(
             tap({
               next: (res) => {
-                tokens.set(res.access_token);
+                tokens.set(res.accessToken);
                 patchState(store, { user: res.user, loading: false, error: null });
                 router.navigate(['/teams']);
               },
@@ -96,7 +96,7 @@ export const AuthStore = signalStore(
           api.registerViaInvitation(token, email, name, password).pipe(
             tap({
               next: (res) => {
-                tokens.set(res.access_token);
+                tokens.set(res.accessToken);
                 patchState(store, { user: res.user, loading: false, error: null });
                 router.navigate(['/teams']);
               },

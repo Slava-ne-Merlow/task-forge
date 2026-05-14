@@ -36,6 +36,11 @@ export class InviteAcceptComponent implements OnInit {
   protected readonly pageState = signal<PageState>('loading');
   protected readonly invitation = signal<Invitation | null>(null);
   protected readonly submitError = signal<string | null>(null);
+  protected readonly joining = signal(false);
+
+  protected readonly alreadyMember = signal(false);
+  protected readonly memberCheckDone = signal(false);
+
   protected readonly isLoggedIn = computed(() => !!this.authStore.user());
 
   protected readonly form = this.fb.nonNullable.group({
@@ -49,6 +54,11 @@ export class InviteAcceptComponent implements OnInit {
       next: (inv) => {
         this.invitation.set(inv);
         this.pageState.set('loaded');
+        if (this.authStore.user()) {
+          this.checkMembership(inv.teamId);
+        } else {
+          this.memberCheckDone.set(true);
+        }
       },
       error: (err) => {
         const detail: string = err.error?.detail ?? 'Invalid invitation';
@@ -59,11 +69,30 @@ export class InviteAcceptComponent implements OnInit {
     });
   }
 
+  private checkMembership(teamId: string): void {
+    this.api.getMembers(teamId).subscribe({
+      next: () => {
+        // 200 OK — user is already a member (or is the owner/creator)
+        this.alreadyMember.set(true);
+        this.memberCheckDone.set(true);
+      },
+      error: () => {
+        // 403 — not a member yet, can join
+        this.alreadyMember.set(false);
+        this.memberCheckDone.set(true);
+      },
+    });
+  }
+
   protected joinAsExistingUser(): void {
     this.submitError.set(null);
+    this.joining.set(true);
     this.api.joinViaInvitation(this.token()).subscribe({
       next: () => this.router.navigate(['/teams']),
-      error: (err) => this.submitError.set(err.error?.detail ?? 'Failed to join'),
+      error: (err) => {
+        this.submitError.set(err.error?.detail ?? 'Failed to join');
+        this.joining.set(false);
+      },
     });
   }
 
