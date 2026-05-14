@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { TuiButton, TuiError, TuiTextfield } from '@taiga-ui/core';
+import { TuiButton, TuiError, TuiInput, TuiTextfield } from '@taiga-ui/core';
 import { TuiButtonLoading } from '@taiga-ui/kit';
 
 import { ApiService } from '../../../core/api/api.service';
@@ -23,7 +23,7 @@ type PageState = 'loading' | 'loaded' | 'error' | 'used';
   templateUrl: './invite-accept.component.html',
   styleUrl: './invite-accept.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, TuiTextfield, TuiButton, TuiButtonLoading, TuiError],
+  imports: [ReactiveFormsModule, RouterLink, TuiTextfield, TuiInput, TuiButton, TuiButtonLoading, TuiError],
 })
 export class InviteAcceptComponent implements OnInit {
   readonly token = input.required<string>();

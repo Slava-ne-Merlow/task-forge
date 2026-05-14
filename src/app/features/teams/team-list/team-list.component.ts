@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TuiButton, TuiError, TuiIcon, TuiTextfield } from '@taiga-ui/core';
+import { TuiButton, TuiError, TuiIcon, TuiInput, TuiTextfield } from '@taiga-ui/core';
 import { TuiBadge, TuiButtonLoading } from '@taiga-ui/kit';
 
 import { AuthStore } from '../../../core/auth/auth.store';
@@ -12,7 +12,7 @@ import { TeamsStore } from '../teams.store';
   templateUrl: './team-list.component.html',
   styleUrl: './team-list.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, TuiButton, TuiButtonLoading, TuiTextfield, TuiError, TuiBadge, TuiIcon],
+  imports: [ReactiveFormsModule, TuiButton, TuiButtonLoading, TuiTextfield, TuiInput, TuiError, TuiBadge, TuiIcon],
 })
 export class TeamListComponent implements OnInit {
   protected readonly teamsStore = inject(TeamsStore);

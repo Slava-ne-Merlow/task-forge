@@ -7,7 +7,7 @@ import {
 } from '@angular/forms';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TuiButton, TuiError, TuiTextfield } from '@taiga-ui/core';
+import { TuiButton, TuiError, TuiInput, TuiTextfield } from '@taiga-ui/core';
 import { TuiButtonLoading } from '@taiga-ui/kit';
 
 import { AuthStore } from '../../../core/auth/auth.store';
@@ -23,7 +23,7 @@ const passwordMatchValidator: ValidatorFn = (group: AbstractControl) => {
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, TuiTextfield, TuiButton, TuiButtonLoading, TuiError],
+  imports: [ReactiveFormsModule, RouterLink, TuiTextfield, TuiInput, TuiButton, TuiButtonLoading, TuiError],
 })
 export class RegisterComponent {
   protected readonly authStore = inject(AuthStore);

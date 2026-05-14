@@ -30,11 +30,12 @@
       }
 
       @case ('loaded') {
+        @if (invitation(); as inv) {
         <div class="auth-card__header">
           <h1 class="auth-card__title">You're invited!</h1>
           <p class="auth-card__subtitle">
-            <strong>{{ invitation()!.createdBy.name }}</strong> invites you to join
-            <strong>{{ invitation()!.teamName }}</strong>
+            <strong>{{ inv.createdBy.name }}</strong> invites you to join
+            <strong>{{ inv.teamName }}</strong>
           </p>
         </div>
 
@@ -70,7 +71,7 @@
               <label tuiLabel for="inv-email">Email</label>
               <input
                 id="inv-email"
-                tuiTextfield
+                tuiInput
                 type="email"
                 formControlName="email"
                 autocomplete="email"
@@ -83,7 +84,7 @@
               <label tuiLabel for="inv-name">Your name</label>
               <input
                 id="inv-name"
-                tuiTextfield
+                tuiInput
                 type="text"
                 formControlName="name"
                 autocomplete="name"
@@ -96,7 +97,7 @@
               <label tuiLabel for="inv-password">Create password</label>
               <input
                 id="inv-password"
-                tuiTextfield
+                tuiInput
                 type="password"
                 formControlName="password"
                 autocomplete="new-password"
@@ -122,6 +123,7 @@
             <a routerLink="/auth/login">Sign in</a>
           </p>
         }
+        } <!-- end @if invitation -->
       }
     }
 
