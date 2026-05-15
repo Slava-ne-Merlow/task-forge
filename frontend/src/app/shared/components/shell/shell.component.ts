@@ -23,6 +23,7 @@ export class ShellComponent {
   protected readonly authStore = inject(AuthStore);
   protected readonly router = inject(Router);
   protected readonly menuOpen = signal(false);
+  protected readonly burgerOpen = signal(false);
 
   protected get userInitials(): string {
     const name = this.authStore.user()?.name ?? '';

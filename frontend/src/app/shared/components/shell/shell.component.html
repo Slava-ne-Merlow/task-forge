@@ -5,7 +5,8 @@
         <span class="shell__logo-text">TaskForge</span>
       </a>
 
-      <div class="shell__nav-links">
+      <!-- Desktop nav links -->
+      <div class="shell__nav-links shell__nav-links--desktop">
         <a
           routerLink="/teams"
           routerLinkActive="shell__nav-link--active"
@@ -14,50 +15,89 @@
         >
           Teams
         </a>
-        <a
-          routerLink="/projects"
-          routerLinkActive="shell__nav-link--active"
-          class="shell__nav-link"
-        >
+        <a routerLink="/projects" routerLinkActive="shell__nav-link--active" class="shell__nav-link">
           Projects
         </a>
-        <a
-          routerLink="/dashboard"
-          routerLinkActive="shell__nav-link--active"
-          class="shell__nav-link"
-        >
+        <a routerLink="/dashboard" routerLinkActive="shell__nav-link--active" class="shell__nav-link">
           My Tasks
         </a>
       </div>
     </nav>
 
-    <div class="shell__user">
-      @if (authStore.user(); as user) {
-        <button
-          tuiButton
-          appearance="ghost"
-          size="s"
-          type="button"
-          class="shell__user-btn"
-          [tuiDropdown]="userMenu"
-          [(tuiDropdownOpen)]="menuOpen"
-          aria-label="User menu"
-          [attr.aria-expanded]="menuOpen()"
-        >
-          <span class="shell__avatar" aria-hidden="true">{{ userInitials }}</span>
-          <span class="shell__user-name">{{ user.name }}</span>
-          <tui-icon icon="@tui.chevron-down" class="shell__chevron" />
-        </button>
+    <div class="shell__right">
+      <!-- Burger button (mobile only) -->
+      <button
+        class="shell__burger"
+        type="button"
+        [attr.aria-expanded]="burgerOpen()"
+        aria-label="Toggle navigation"
+        (click)="burgerOpen.update(v => !v)"
+      >
+        <span class="shell__burger-line"></span>
+        <span class="shell__burger-line"></span>
+        <span class="shell__burger-line"></span>
+      </button>
 
-        <ng-template #userMenu>
-          <tui-data-list role="menu" aria-label="User options">
-            <p class="shell__menu-email">{{ user.email }}</p>
-            <button tuiOption type="button" role="menuitem" (click)="logout()">Sign out</button>
-          </tui-data-list>
-        </ng-template>
-      }
+      <!-- User dropdown -->
+      <div class="shell__user">
+        @if (authStore.user(); as user) {
+          <button
+            tuiButton
+            appearance="ghost"
+            size="s"
+            type="button"
+            class="shell__user-btn"
+            [tuiDropdown]="userMenu"
+            [(tuiDropdownOpen)]="menuOpen"
+            aria-label="User menu"
+            [attr.aria-expanded]="menuOpen()"
+          >
+            <span class="shell__avatar" aria-hidden="true">{{ userInitials }}</span>
+            <span class="shell__user-name">{{ user.name }}</span>
+            <tui-icon icon="@tui.chevron-down" class="shell__chevron" />
+          </button>
+
+          <ng-template #userMenu>
+            <tui-data-list role="menu" aria-label="User options">
+              <p class="shell__menu-email">{{ user.email }}</p>
+              <button tuiOption type="button" role="menuitem" (click)="logout()">Sign out</button>
+            </tui-data-list>
+          </ng-template>
+        }
+      </div>
     </div>
   </header>
+
+  <!-- Mobile nav drawer -->
+  @if (burgerOpen()) {
+    <nav class="shell__mobile-nav" aria-label="Mobile navigation">
+      <a
+        routerLink="/teams"
+        routerLinkActive="shell__mobile-link--active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="shell__mobile-link"
+        (click)="burgerOpen.set(false)"
+      >
+        Teams
+      </a>
+      <a
+        routerLink="/projects"
+        routerLinkActive="shell__mobile-link--active"
+        class="shell__mobile-link"
+        (click)="burgerOpen.set(false)"
+      >
+        Projects
+      </a>
+      <a
+        routerLink="/dashboard"
+        routerLinkActive="shell__mobile-link--active"
+        class="shell__mobile-link"
+        (click)="burgerOpen.set(false)"
+      >
+        My Tasks
+      </a>
+    </nav>
+  }
 
   <main class="shell__content" role="main">
     <router-outlet />

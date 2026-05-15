@@ -353,7 +353,46 @@
   .kanban {
     grid-template-columns: 1fr;
   }
+
   .board-page {
     padding: 1rem;
+    /* prevent horizontal overflow from form */
+    overflow-x: hidden;
+  }
+
+  /* Create task form: stack grid to single column */
+  .create-card__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .create-card__sidebar {
+    grid-column: 1;
+    grid-row: auto;
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .create-card__sidebar .form-select-btn {
+    flex: 1;
+  }
+
+  .create-card__meta-row {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .create-card__full {
+    grid-column: 1;
+  }
+
+  /* Prevent search bar from overflowing */
+  .board-search__input {
+    width: 8rem;
+  }
+
+  /* Stack header actions */
+  .board-page__header-actions {
+    width: 100%;
+    justify-content: flex-start;
   }
 }
