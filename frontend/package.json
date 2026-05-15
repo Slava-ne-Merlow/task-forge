@@ -14,7 +14,9 @@
     "lint:styles": "stylelint \"src/**/*.css\"",
     "lint:styles:fix": "stylelint \"src/**/*.css\" --fix",
     "format": "prettier --write \"src/**/*.{ts,html,css,json}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,html,css,json}\""
+    "format:check": "prettier --check \"src/**/*.{ts,html,css,json}\"",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "private": true,
   "packageManager": "npm@11.9.0",
@@ -53,6 +55,7 @@
     "@angular/compiler-cli": "^21.2.0",
     "@angular/platform-browser-dynamic": "^21.2.13",
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.60.0",
     "@typescript-eslint/eslint-plugin": "^8.59.3",
     "@typescript-eslint/parser": "^8.59.3",
     "eslint": "^10.3.0",
