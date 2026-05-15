@@ -150,9 +150,6 @@ Done-критерий: таблица отображает реальные да
 
 ## Figma / Miro (прототип)
 
-> Прототип разработан в Miro:
-> **https://miro.com/app/board/taskforge-prototype**
+> Прототип разработан в Miro — экраны: Login, Register, Teams List, Project Board (4 колонки), Task Detail, My Tasks Dashboard.
 >
-> Экраны: Login, Register, Teams List, Project Board (4 колонки), Task Detail, My Tasks Dashboard.
->
-> *(Ссылка на реальный публичный прототип — добавить после оформления в Miro/Figma)*
+> *(Ссылка на публичный прототип — оформить в Miro/Figma перед защитой)*

@@ -4,6 +4,8 @@
 
 **Деплой:** https://31-177-82-157.nip.io
 
+**Lighthouse (mobile):** Performance 85 / Accessibility 98 / Best Practices 100 / SEO 82 — [скриншот](docs/lighthouse.png)
+
 ---
 
 ## Стек
