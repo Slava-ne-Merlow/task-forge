@@ -1,7 +1,5 @@
+import { TEST_PROVIDERS, NO_ERRORS_SCHEMA } from '../../../../test-providers';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { TaskDashboardComponent } from './task-dashboard.component';
 
 describe('TaskDashboardComponent', () => {
@@ -9,7 +7,8 @@ describe('TaskDashboardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TaskDashboardComponent],
-      providers: [provideRouter([]), provideHttpClient(), provideAnimations()],
+      providers: TEST_PROVIDERS,
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
     fixture = TestBed.createComponent(TaskDashboardComponent);
     fixture.detectChanges();

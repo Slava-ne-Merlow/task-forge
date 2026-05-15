@@ -1,7 +1,5 @@
+import { TEST_PROVIDERS, NO_ERRORS_SCHEMA } from '../../../../test-providers';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
-import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { ShellComponent } from './shell.component';
 
@@ -12,7 +10,8 @@ describe('ShellComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ShellComponent],
-      providers: [provideRouter([]), provideHttpClient(), provideAnimations()],
+      providers: TEST_PROVIDERS,
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ShellComponent);

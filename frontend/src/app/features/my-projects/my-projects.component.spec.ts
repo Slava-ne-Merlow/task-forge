@@ -1,7 +1,5 @@
+import { TEST_PROVIDERS, NO_ERRORS_SCHEMA } from '../../../test-providers';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
-import { provideAnimations } from '@angular/platform-browser/animations';
 import { MyProjectsComponent } from './my-projects.component';
 
 describe('MyProjectsComponent', () => {
@@ -9,7 +7,8 @@ describe('MyProjectsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MyProjectsComponent],
-      providers: [provideRouter([]), provideHttpClient(), provideAnimations()],
+      providers: TEST_PROVIDERS,
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
     fixture = TestBed.createComponent(MyProjectsComponent);
     fixture.detectChanges();
