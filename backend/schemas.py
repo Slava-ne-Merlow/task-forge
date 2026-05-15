@@ -109,6 +109,15 @@ class AssigneeOut(CamelModel):
     email: str
 
 
+class TaskLogOut(CamelModel):
+    id: str
+    user: AssigneeOut
+    action: str
+    hours: float | None = None
+    description: str
+    created_at: datetime
+
+
 class TaskOut(CamelModel):
     id: str
     project_id: str
@@ -120,7 +129,24 @@ class TaskOut(CamelModel):
     deadline: datetime | None = None
     estimated_hours: float | None = None
     logged_hours: float = 0.0
+    started_at: datetime | None = None
     created_at: datetime
+
+
+class TaskDetailOut(CamelModel):
+    id: str
+    project_id: str
+    title: str
+    description: str | None = None
+    status: str
+    priority: str
+    assignee: AssigneeOut | None = None
+    deadline: datetime | None = None
+    estimated_hours: float | None = None
+    logged_hours: float = 0.0
+    started_at: datetime | None = None
+    created_at: datetime
+    logs: list[TaskLogOut] = []
 
 
 class TaskCreate(BaseModel):
@@ -141,3 +167,12 @@ class TaskUpdate(BaseModel):
     deadline: datetime | None = None
     estimated_hours: float | None = None
     logged_hours: float | None = None
+
+
+class TaskLogCreate(BaseModel):
+    hours: float | None = None
+    description: str
+
+
+class TaskRejectRequest(BaseModel):
+    comment: str

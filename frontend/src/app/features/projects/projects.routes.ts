@@ -11,4 +11,9 @@ export const projectsRoutes: Routes = [
     loadComponent: () =>
       import('./project-board/project-board.component').then((m) => m.ProjectBoardComponent),
   },
+  {
+    path: ':projectId/tasks/:taskId',
+    loadComponent: () =>
+      import('./task-detail/task-detail.component').then((m) => m.TaskDetailComponent),
+  },
 ];

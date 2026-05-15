@@ -20,6 +20,14 @@ export const routes: Routes = [
     loadChildren: () => import('./features/teams/teams.routes').then((m) => m.teamsRoutes),
   },
   {
+    path: 'projects',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./shared/components/shell/shell.component').then((m) => m.ShellComponent),
+    loadChildren: () =>
+      import('./features/my-projects/my-projects.routes').then((m) => m.myProjectsRoutes),
+  },
+  {
     path: 'dashboard',
     canActivate: [authGuard],
     loadComponent: () =>

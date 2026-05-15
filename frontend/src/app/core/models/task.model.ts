@@ -18,7 +18,23 @@ export interface Task {
   deadline: string | null;
   estimatedHours: number | null;
   loggedHours: number;
+  startedAt: string | null;
   createdAt: string;
+}
+
+export type TaskLogAction = 'log' | 'claim' | 'start' | 'approve' | 'reject' | 'status_change';
+
+export interface TaskLog {
+  id: string;
+  user: TaskAssignee;
+  action: TaskLogAction;
+  hours: number | null;
+  description: string;
+  createdAt: string;
+}
+
+export interface TaskDetail extends Task {
+  logs: TaskLog[];
 }
 
 export const TASK_STATUSES: { value: TaskStatus; label: string }[] = [

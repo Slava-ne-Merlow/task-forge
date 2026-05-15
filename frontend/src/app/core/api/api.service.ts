@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 import { Invitation } from '../models/invitation.model';
 import { Project } from '../models/project.model';
-import { Task, TaskPriority, TaskStatus } from '../models/task.model';
+import { Task, TaskDetail, TaskLog, TaskPriority, TaskStatus } from '../models/task.model';
 import { Team, TeamMember, TeamRole } from '../models/team.model';
 import { User } from '../models/user.model';
 
@@ -152,5 +152,29 @@ export class ApiService {
 
   getMyTasks(): Observable<Task[]> {
     return this.http.get<Task[]>(`${API}/me/tasks`);
+  }
+
+  getMyProjects(): Observable<Project[]> {
+    return this.http.get<Project[]>(`${API}/me/projects`);
+  }
+
+  getTaskDetail(taskId: string): Observable<TaskDetail> {
+    return this.http.get<TaskDetail>(`${API}/tasks/${taskId}`);
+  }
+
+  claimTask(taskId: string): Observable<Task> {
+    return this.http.post<Task>(`${API}/tasks/${taskId}/claim`, {});
+  }
+
+  addTaskLog(taskId: string, hours: number | null, description: string): Observable<TaskLog> {
+    return this.http.post<TaskLog>(`${API}/tasks/${taskId}/logs`, { hours, description });
+  }
+
+  approveTask(taskId: string): Observable<Task> {
+    return this.http.post<Task>(`${API}/tasks/${taskId}/approve`, {});
+  }
+
+  rejectTask(taskId: string, comment: string): Observable<Task> {
+    return this.http.post<Task>(`${API}/tasks/${taskId}/reject`, { comment });
   }
 }

@@ -122,7 +122,25 @@ class Task(Base):
     logged_hours: Mapped[float] = mapped_column(Float, default=0.0)
     status: Mapped[TaskStatus] = mapped_column(String, default=TaskStatus.TODO)
     priority: Mapped[TaskPriority] = mapped_column(String, default=TaskPriority.MEDIUM)
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     project: Mapped["Project"] = relationship("Project", back_populates="tasks")
     assignee: Mapped["User | None"] = relationship("User", foreign_keys=[assignee_id], back_populates="assigned_tasks")
+    logs: Mapped[list["TaskLog"]] = relationship("TaskLog", back_populates="task", order_by="TaskLog.created_at")
+
+
+class TaskLog(Base):
+    __tablename__ = "task_logs"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True, default=new_uuid)
+    task_id: Mapped[str] = mapped_column(String, ForeignKey("tasks.id"), nullable=False)
+    user_id: Mapped[str] = mapped_column(String, ForeignKey("users.id"), nullable=False)
+    # action: "log" | "claim" | "start" | "approve" | "reject" | "status_change"
+    action: Mapped[str] = mapped_column(String, nullable=False, default="log")
+    hours: Mapped[float | None] = mapped_column(Float, nullable=True)
+    description: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    task: Mapped["Task"] = relationship("Task", back_populates="logs")
+    user: Mapped["User"] = relationship("User")

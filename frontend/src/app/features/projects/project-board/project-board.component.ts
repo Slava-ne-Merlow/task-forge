@@ -42,6 +42,7 @@ export class ProjectBoardComponent implements OnInit {
   protected readonly authStore = inject(AuthStore);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+  private readonly api = inject(ApiService);
 
   protected readonly showCreateForm = signal(false);
   protected readonly editingTask = signal<Task | null>(null);
@@ -63,11 +64,23 @@ export class ProjectBoardComponent implements OnInit {
   protected readonly priorities = TASK_PRIORITIES;
   protected readonly statuses = TASK_STATUSES;
 
-  protected readonly canManage = computed(() => {
+  protected readonly currentUserRole = computed(() => {
     const uid = this.authStore.user()?.id;
-    const role = this.teamsStore.members().find((m) => m.user.id === uid)?.role;
-    return role === 'owner' || role === 'lead';
+    return this.teamsStore.members().find((m) => m.user.id === uid)?.role ?? null;
   });
+
+  protected readonly canManage = computed(
+    () => this.currentUserRole() === 'owner' || this.currentUserRole() === 'lead',
+  );
+
+  protected canAdvanceTask(task: Task): boolean {
+    const s = task.status;
+    if (s === 'done' || s === 'review') return false;
+    const uid = this.authStore.user()?.id;
+    const role = this.currentUserRole();
+    if (role === 'developer') return task.assignee?.id === uid;
+    return true; // owner/lead can advance any
+  }
 
   protected readonly filteredTasksByStatus = computed(() =>
     this.projectsStore.tasksByStatus().map((col) => ({
@@ -107,7 +120,7 @@ export class ProjectBoardComponent implements OnInit {
     if (existing) {
       this.projectsStore.setCurrentProject(existing);
     } else {
-      inject(ApiService).getProjects(this.teamId()).subscribe((projects) => {
+      this.api.getProjects(this.teamId()).subscribe((projects) => {
         const p = projects.find((pr) => pr.id === this.projectId()) ?? null;
         this.projectsStore.setCurrentProject(p);
       });
@@ -176,6 +189,10 @@ export class ProjectBoardComponent implements OnInit {
 
   protected onStatusChange(task: Task, status: TaskStatus): void {
     this.projectsStore.updateTaskStatus({ taskId: task.id, status });
+  }
+
+  protected openTaskDetail(task: Task): void {
+    this.router.navigate(['/teams', this.teamId(), 'projects', this.projectId(), 'tasks', task.id]);
   }
 
   protected deleteTask(task: Task): void {

@@ -70,87 +70,96 @@
 
   <!-- Create task form -->
   @if (showCreateForm()) {
+    <!-- Dropdown templates (declared outside form for scope clarity) -->
+    <ng-template #createPriorityTpl>
+      <tui-data-list>
+        @for (p of priorities; track p.value) {
+          <button tuiOption type="button"
+            [class.tui-option--active]="createForm.get('priority')!.value === p.value"
+            (click)="createForm.get('priority')!.setValue(p.value); createPriorityOpen.set(false)">
+            {{ p.label }}
+          </button>
+        }
+      </tui-data-list>
+    </ng-template>
+
+    <ng-template #createAssigneeTpl>
+      <tui-data-list>
+        <button tuiOption type="button"
+          (click)="createForm.get('assigneeId')!.setValue(''); createAssigneeOpen.set(false)">
+          Unassigned
+        </button>
+        @for (m of teamsStore.members(); track m.id) {
+          <button tuiOption type="button"
+            [class.tui-option--active]="createForm.get('assigneeId')!.value === m.user.id"
+            (click)="createForm.get('assigneeId')!.setValue(m.user.id); createAssigneeOpen.set(false)">
+            {{ m.user.name }}
+          </button>
+        }
+      </tui-data-list>
+    </ng-template>
+
     <form class="create-card" [formGroup]="createForm" (ngSubmit)="submitCreate()" novalidate aria-label="Create task">
       <h2 class="create-card__title">New task</h2>
 
-      <!-- Title — full width -->
-      <tui-textfield>
-        <label tuiLabel for="task-title">Title *</label>
-        <input id="task-title" tuiInput formControlName="title" placeholder="What needs to be done?" />
-        <tui-error formControlName="title" [order]="['required', 'minlength']" />
-      </tui-textfield>
+      <div class="create-card__grid">
 
-      <!-- Row: Priority | Assignee | Deadline | Est. hours -->
-      <div class="create-card__row">
-        <div class="form-dropdown-group">
-          <span class="form-dropdown-label">Priority</span>
-          <button
-            tuiButton type="button" appearance="outline" size="m" class="form-dropdown-btn"
-            [tuiDropdown]="createPriorityTpl"
-            [tuiDropdownOpen]="createPriorityOpen()"
-            (tuiDropdownOpenChange)="createPriorityOpen.set($event)"
-          >
-            {{ priorityLabel(createForm.get('priority')!.value) }}
-            <tui-icon icon="@tui.chevron-down" />
-          </button>
-          <ng-template #createPriorityTpl>
-            <tui-data-list>
-              @for (p of priorities; track p.value) {
-                <button tuiOption type="button"
-                  [class.tui-option--active]="createForm.get('priority')!.value === p.value"
-                  (click)="createForm.get('priority')!.setValue(p.value); createPriorityOpen.set(false)">
-                  {{ p.label }}
-                </button>
-              }
-            </tui-data-list>
-          </ng-template>
-        </div>
+        <!-- Left col, row 1: Title -->
+        <tui-textfield class="create-card__title-field">
+          <label tuiLabel for="task-title">Title *</label>
+          <input id="task-title" tuiInput formControlName="title" placeholder="What needs to be done?" />
+          <tui-error formControlName="title" [order]="['required', 'minlength']" />
+        </tui-textfield>
 
-        <div class="form-dropdown-group">
-          <span class="form-dropdown-label">Assignee</span>
+        <!-- Right col, rows 1–2: Assignee + Priority -->
+        <div class="create-card__sidebar">
           <button
-            tuiButton type="button" appearance="outline" size="m" class="form-dropdown-btn"
+            class="form-select-btn" type="button"
             [tuiDropdown]="createAssigneeTpl"
             [tuiDropdownOpen]="createAssigneeOpen()"
             (tuiDropdownOpenChange)="createAssigneeOpen.set($event)"
+            aria-label="Assignee"
           >
-            <tui-icon icon="@tui.user" />
-            {{ assigneeLabel(createForm.get('assigneeId')!.value) }}
+            <span class="form-select-btn__text">
+              <tui-icon icon="@tui.user" class="form-select-btn__icon" />
+              {{ assigneeLabel(createForm.get('assigneeId')!.value) }}
+            </span>
             <tui-icon icon="@tui.chevron-down" />
           </button>
-          <ng-template #createAssigneeTpl>
-            <tui-data-list>
-              <button tuiOption type="button"
-                (click)="createForm.get('assigneeId')!.setValue(''); createAssigneeOpen.set(false)">
-                Unassigned
-              </button>
-              @for (m of teamsStore.members(); track m.id) {
-                <button tuiOption type="button"
-                  [class.tui-option--active]="createForm.get('assigneeId')!.value === m.user.id"
-                  (click)="createForm.get('assigneeId')!.setValue(m.user.id); createAssigneeOpen.set(false)">
-                  {{ m.user.name }}
-                </button>
-              }
-            </tui-data-list>
-          </ng-template>
+
+          <button
+            class="form-select-btn" type="button"
+            [tuiDropdown]="createPriorityTpl"
+            [tuiDropdownOpen]="createPriorityOpen()"
+            (tuiDropdownOpenChange)="createPriorityOpen.set($event)"
+            aria-label="Priority"
+          >
+            <span class="form-select-btn__text">
+              {{ priorityLabel(createForm.get('priority')!.value) }}
+            </span>
+            <tui-icon icon="@tui.chevron-down" />
+          </button>
         </div>
 
-        <tui-textfield class="form-field-compact">
-          <label tuiLabel for="task-deadline">Deadline</label>
-          <input id="task-deadline" tuiInput type="date" formControlName="deadline" />
+        <!-- Left col, row 2: Deadline + Est. hours -->
+        <div class="create-card__meta-row">
+          <tui-textfield>
+            <label tuiLabel for="task-deadline">Deadline</label>
+            <input id="task-deadline" tuiInput type="date" formControlName="deadline" />
+          </tui-textfield>
+          <tui-textfield>
+            <label tuiLabel for="task-hours">Est. hours</label>
+            <input id="task-hours" tuiInput type="number" formControlName="estimatedHours" placeholder="0" min="0" />
+          </tui-textfield>
+        </div>
+
+        <!-- Full width, row 3: Description -->
+        <tui-textfield class="create-card__full">
+          <label tuiLabel for="task-desc">Description</label>
+          <input id="task-desc" tuiInput formControlName="description" placeholder="Optional details…" />
         </tui-textfield>
 
-        <tui-textfield class="form-field-compact">
-          <label tuiLabel for="task-hours">Est. hours</label>
-          <input id="task-hours" tuiInput type="number" formControlName="estimatedHours" placeholder="0" min="0" />
-        </tui-textfield>
       </div>
-
-      <!-- Description — full width -->
-      <tui-textfield>
-        <label tuiLabel for="task-desc">Description</label>
-        <input id="task-desc" tuiInput formControlName="description" placeholder="Optional details…" />
-      </tui-textfield>
 
       <div class="create-card__actions">
         <button tuiButton type="button" appearance="flat" size="m" (click)="cancelCreate()">Cancel</button>
@@ -279,9 +288,11 @@
               <app-task-card
                 [task]="task"
                 [canEdit]="canManage()"
+                [canAdvance]="canAdvanceTask(task)"
                 (statusChange)="onStatusChange(task, $event)"
                 (editClick)="openEdit(task)"
                 (deleteClick)="deleteTask(task)"
+                (titleClick)="openTaskDetail(task)"
               />
             }
             @if (!col.tasks.length) {

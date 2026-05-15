@@ -1,0 +1,37 @@
+<div class="my-projects">
+  <div class="my-projects__header">
+    <h1 class="my-projects__title">Projects</h1>
+    <p class="my-projects__subtitle">All projects across your teams</p>
+  </div>
+
+  @if (error()) {
+    <div class="my-projects__error" role="alert">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="my-projects__loader"><span class="loader-spinner"></span></div>
+  } @else if (!projects().length) {
+    <div class="my-projects__empty">
+      <tui-icon icon="@tui.folder-open" class="my-projects__empty-icon" />
+      <p>No projects yet. Ask your team Owner to create one.</p>
+    </div>
+  } @else {
+    <ul class="project-grid" aria-label="My projects">
+      @for (project of projects(); track project.id) {
+        <li class="project-card" (click)="open(project)" role="button" tabindex="0"
+          (keydown.enter)="open(project)">
+          <div class="project-card__header">
+            <h2 class="project-card__name">{{ project.name }}</h2>
+            <span tuiBadge appearance="neutral" size="s">
+              {{ project.taskCount }} {{ project.taskCount === 1 ? 'task' : 'tasks' }}
+            </span>
+          </div>
+          @if (project.description) {
+            <p class="project-card__desc">{{ project.description }}</p>
+          }
+          <p class="project-card__date">{{ project.createdAt | date: 'dd MMM yyyy' }}</p>
+        </li>
+      }
+    </ul>
+  }
+</div>

@@ -164,6 +164,54 @@ export const ProjectsStore = signalStore(
       patchState(store, { currentProject: project });
     },
 
+    claimTask: rxMethod<string>(
+      pipe(
+        switchMap((taskId) =>
+          api.claimTask(taskId).pipe(
+            tap({
+              next: (updated) => {
+                const tasks = store.tasks().map((t) => (t.id === taskId ? updated : t));
+                patchState(store, { tasks });
+              },
+              error: (err) => patchState(store, { error: err.error?.detail ?? 'Failed to claim task' }),
+            }),
+          ),
+        ),
+      ),
+    ),
+
+    approveTask: rxMethod<string>(
+      pipe(
+        switchMap((taskId) =>
+          api.approveTask(taskId).pipe(
+            tap({
+              next: (updated) => {
+                const tasks = store.tasks().map((t) => (t.id === taskId ? updated : t));
+                patchState(store, { tasks });
+              },
+              error: (err) => patchState(store, { error: err.error?.detail ?? 'Failed to approve task' }),
+            }),
+          ),
+        ),
+      ),
+    ),
+
+    rejectTask: rxMethod<{ taskId: string; comment: string }>(
+      pipe(
+        switchMap(({ taskId, comment }) =>
+          api.rejectTask(taskId, comment).pipe(
+            tap({
+              next: (updated) => {
+                const tasks = store.tasks().map((t) => (t.id === taskId ? updated : t));
+                patchState(store, { tasks });
+              },
+              error: (err) => patchState(store, { error: err.error?.detail ?? 'Failed to reject task' }),
+            }),
+          ),
+        ),
+      ),
+    ),
+
     clearError(): void {
       patchState(store, { error: null });
     },

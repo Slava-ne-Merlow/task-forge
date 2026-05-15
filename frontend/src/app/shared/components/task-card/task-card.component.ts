@@ -21,12 +21,14 @@ import { Task, TaskStatus } from '../../../core/models/task.model';
 export class TaskCardComponent {
   readonly task = input.required<Task>();
   readonly canEdit = input(false);
+  readonly canAdvance = input(false);
   readonly showProject = input(false);
   readonly projectName = input<string>('');
 
   readonly statusChange = output<TaskStatus>();
   readonly editClick = output<void>();
   readonly deleteClick = output<void>();
+  readonly titleClick = output<void>();
 
   protected readonly isOverdue = computed(() => {
     const dl = this.task().deadline;

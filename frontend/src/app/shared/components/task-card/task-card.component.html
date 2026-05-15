@@ -44,7 +44,9 @@
     <p class="task-card__project">{{ projectName() }}</p>
   }
 
-  <h3 class="task-card__title">{{ task().title }}</h3>
+  <button class="task-card__title" type="button" (click)="titleClick.emit()">
+    {{ task().title }}
+  </button>
 
   @if (task().description) {
     <p class="task-card__desc">{{ task().description }}</p>
@@ -85,7 +87,7 @@
     </div>
   }
 
-  @if (task().status !== 'done') {
+  @if (canAdvance() && task().status !== 'done' && task().status !== 'review') {
     <button
       tuiButton
       type="button"

@@ -1,0 +1,221 @@
+<div class="detail-page">
+
+  <!-- Header -->
+  <div class="detail-page__header">
+    <button tuiButton type="button" appearance="ghost" size="s" (click)="goBack()">
+      <tui-icon icon="@tui.arrow-left" /> Board
+    </button>
+  </div>
+
+  @if (loading()) {
+    <div class="detail-page__loader"><span class="loader-spinner"></span></div>
+  } @else if (error() && !task()) {
+    <div class="detail-page__error" role="alert">{{ error() }}</div>
+  } @else if (task(); as t) {
+
+    <div class="detail-layout">
+
+      <!-- ── Main content ── -->
+      <div class="detail-main">
+
+        <!-- Title & badges -->
+        <div class="task-header">
+          <div class="task-header__badges">
+            <span
+              tuiBadge
+              [appearance]="priorityAppearance[t.priority] ?? 'neutral'"
+              size="s"
+            >{{ t.priority }}</span>
+            <span tuiBadge appearance="neutral" size="s">
+              {{ t.status.replace('_', ' ') }}
+            </span>
+          </div>
+          <h1 class="task-header__title">{{ t.title }}</h1>
+          @if (t.description) {
+            <p class="task-header__desc">{{ t.description }}</p>
+          }
+        </div>
+
+        @if (error()) {
+          <div class="detail-page__error" role="alert">{{ error() }}</div>
+        }
+
+        <!-- Actions -->
+        <div class="task-actions">
+          @if (canClaim()) {
+            <button tuiButton type="button" appearance="primary" size="m"
+              [loading]="submitting()" (click)="claim()">
+              <tui-icon icon="@tui.user-check" /> Take task
+            </button>
+          }
+
+          @if (canAdvance() && nextStatus()) {
+            <button tuiButton type="button" appearance="primary" size="m"
+              [loading]="submitting()" (click)="advance()">
+              Move to {{ nextStatusLabel() }}
+              <tui-icon icon="@tui.arrow-right" />
+            </button>
+          }
+
+          @if (canLog() && !showLogForm()) {
+            <button tuiButton type="button" appearance="outline" size="m"
+              (click)="showLogForm.set(true)">
+              <tui-icon icon="@tui.clock" /> Log work
+            </button>
+          }
+
+          @if (canApproveReject()) {
+            <button tuiButton type="button" appearance="primary" size="m"
+              [loading]="submitting()" (click)="approve()">
+              <tui-icon icon="@tui.check" /> Approve
+            </button>
+            <button tuiButton type="button" appearance="destructive" size="m"
+              (click)="showRejectForm.set(true)">
+              <tui-icon icon="@tui.x" /> Reject
+            </button>
+          }
+        </div>
+
+        <!-- Log work form -->
+        @if (showLogForm()) {
+          <form class="log-form" [formGroup]="logForm" (ngSubmit)="submitLog()" novalidate>
+            <h3 class="log-form__title">Log work</h3>
+            <div class="log-form__row">
+              <tui-textfield class="log-form__hours">
+                <label tuiLabel for="log-hours">Hours spent</label>
+                <input id="log-hours" tuiInput type="number" formControlName="hours"
+                  placeholder="e.g. 1.5" min="0" step="0.5" />
+              </tui-textfield>
+              <tui-textfield class="log-form__desc">
+                <label tuiLabel for="log-desc">What was done *</label>
+                <input id="log-desc" tuiInput formControlName="description"
+                  placeholder="Describe the work…" />
+                <tui-error formControlName="description" [order]="['required']" />
+              </tui-textfield>
+            </div>
+            <div class="log-form__actions">
+              <button tuiButton type="button" appearance="flat" size="s"
+                (click)="showLogForm.set(false); logForm.reset()">Cancel</button>
+              <button tuiButton type="submit" appearance="primary" size="s"
+                [loading]="submitting()">Save</button>
+            </div>
+          </form>
+        }
+
+        <!-- Reject form -->
+        @if (showRejectForm()) {
+          <form class="log-form log-form--reject" [formGroup]="rejectForm"
+            (ngSubmit)="submitReject()" novalidate>
+            <h3 class="log-form__title">Reject & request changes</h3>
+            <tui-textfield>
+              <label tuiLabel for="reject-comment">Comment *</label>
+              <input id="reject-comment" tuiInput formControlName="comment"
+                placeholder="What needs to be fixed?" />
+              <tui-error formControlName="comment" [order]="['required', 'minlength']" />
+            </tui-textfield>
+            <div class="log-form__actions">
+              <button tuiButton type="button" appearance="flat" size="s"
+                (click)="showRejectForm.set(false); rejectForm.reset()">Cancel</button>
+              <button tuiButton type="submit" appearance="destructive" size="s"
+                [loading]="submitting()">Reject</button>
+            </div>
+          </form>
+        }
+
+        <!-- Activity log -->
+        <section class="activity" aria-labelledby="activity-heading">
+          <h2 id="activity-heading" class="activity__title">Activity</h2>
+
+          @if (!t.logs.length) {
+            <p class="activity__empty">No activity yet.</p>
+          } @else {
+            <ol class="activity__list" reversed>
+              @for (log of t.logs; track log.id; let last = $last) {
+                <li class="activity__item" [class.activity__item--last]="last">
+                  <div class="activity__icon-wrap">
+                    <tui-icon
+                      [icon]="logActionIcon[log.action] ?? '@tui.message-circle'"
+                      class="activity__icon activity__icon--{{ log.action }}"
+                    />
+                  </div>
+                  <div class="activity__content">
+                    <div class="activity__meta">
+                      <span class="activity__user">{{ log.user.name }}</span>
+                      <span class="activity__time">{{ log.createdAt | date: 'dd MMM, HH:mm' }}</span>
+                      @if (log.hours) {
+                        <span tuiBadge appearance="info" size="s">+{{ log.hours }}h</span>
+                      }
+                    </div>
+                    <p class="activity__desc">{{ log.description }}</p>
+                  </div>
+                </li>
+              }
+            </ol>
+          }
+        </section>
+
+      </div>
+
+      <!-- ── Sidebar ── -->
+      <aside class="detail-sidebar">
+        <dl class="task-meta">
+          <div class="task-meta__item">
+            <dt>Assignee</dt>
+            <dd>
+              @if (t.assignee) {
+                <div class="task-meta__user">
+                  <span class="task-meta__avatar">{{ t.assignee.name.charAt(0).toUpperCase() }}</span>
+                  {{ t.assignee.name }}
+                </div>
+              } @else {
+                <span class="task-meta__empty">Unassigned</span>
+              }
+            </dd>
+          </div>
+
+          <div class="task-meta__item">
+            <dt>Deadline</dt>
+            <dd>
+              @if (t.deadline) {
+                {{ t.deadline | date: 'dd MMM yyyy' }}
+              } @else {
+                <span class="task-meta__empty">—</span>
+              }
+            </dd>
+          </div>
+
+          @if (t.startedAt) {
+            <div class="task-meta__item">
+              <dt>Started</dt>
+              <dd>{{ t.startedAt | date: 'dd MMM yyyy, HH:mm' }}</dd>
+            </div>
+          }
+
+          <div class="task-meta__item">
+            <dt>Progress</dt>
+            <dd class="task-meta__progress">
+              <span class="task-meta__hours">
+                {{ t.loggedHours }}h
+                @if (t.estimatedHours) { / {{ t.estimatedHours }}h est. }
+              </span>
+              @if (t.estimatedHours) {
+                <div class="task-meta__bar">
+                  <div class="task-meta__fill"
+                    [style.width.%]="Math.min(100, (t.loggedHours / t.estimatedHours) * 100)"
+                    [class.task-meta__fill--over]="t.loggedHours > t.estimatedHours">
+                  </div>
+                </div>
+              }
+            </dd>
+          </div>
+
+          <div class="task-meta__item">
+            <dt>Created</dt>
+            <dd>{{ t.createdAt | date: 'dd MMM yyyy' }}</dd>
+          </div>
+        </dl>
+      </aside>
+
+    </div>
+  }
+</div>

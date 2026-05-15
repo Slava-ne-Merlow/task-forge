@@ -45,10 +45,21 @@
 
 .task-card__title {
   margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
   font-size: 0.9375rem;
   font-weight: 600;
   color: var(--tui-text-primary);
   line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+  transition: color 0.15s;
+}
+
+.task-card__title:hover {
+  color: var(--tui-text-action);
 }
 
 .task-card__desc {
