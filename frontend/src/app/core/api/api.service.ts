@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
+import { environment } from '../../../environments/environment';
+
 import { Invitation } from '../models/invitation.model';
 import { Project } from '../models/project.model';
 import { Task, TaskDetail, TaskLog, TaskPriority, TaskStatus } from '../models/task.model';
@@ -14,7 +16,7 @@ export interface AuthResponse {
   user: User;
 }
 
-const API = 'http://localhost:8000';
+const API = environment.apiUrl;
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
