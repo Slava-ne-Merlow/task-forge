@@ -78,8 +78,17 @@ export class ProjectBoardComponent implements OnInit {
     if (s === 'done' || s === 'review') return false;
     const uid = this.authStore.user()?.id;
     const role = this.currentUserRole();
-    if (role === 'developer') return task.assignee?.id === uid;
-    return true; // owner/lead can advance any
+    const isAssignee = task.assignee?.id === uid;
+    const isUnassigned = !task.assignee;
+
+    // todo → in_progress: only the assignee (or unassigned tasks can be taken by anyone)
+    if (s === 'todo') {
+      if (isUnassigned) return true;  // anyone can claim+start
+      return isAssignee;             // assigned → only the assignee
+    }
+    // in_progress → review: only assignee
+    if (s === 'in_progress') return isAssignee;
+    return false;
   }
 
   protected readonly filteredTasksByStatus = computed(() =>

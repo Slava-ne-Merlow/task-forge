@@ -40,7 +40,8 @@
           <div class="detail-page__error" role="alert">{{ error() }}</div>
         }
 
-        <!-- Actions -->
+        <!-- Actions — hidden when nothing to show -->
+        @if (hasAnyAction()) {
         <div class="task-actions">
           @if (canClaim()) {
             <button tuiButton type="button" appearance="primary" size="m"
@@ -75,6 +76,7 @@
             </button>
           }
         </div>
+        } <!-- end @if hasAnyAction -->
 
         <!-- Log work form -->
         @if (showLogForm()) {

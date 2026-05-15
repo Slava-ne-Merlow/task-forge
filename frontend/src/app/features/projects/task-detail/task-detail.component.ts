@@ -83,6 +83,14 @@ export class TaskDetailComponent implements OnInit {
     () => this.canManage() && this.task()?.status === 'review',
   );
 
+  protected readonly hasAnyAction = computed(
+    () =>
+      this.canClaim() ||
+      (this.canAdvance() && !!this.nextStatus()) ||
+      (this.canLog() && !this.showLogForm()) ||
+      this.canApproveReject(),
+  );
+
   protected readonly nextStatus = computed((): TaskStatus | null => {
     const order: TaskStatus[] = ['todo', 'in_progress', 'review', 'done'];
     const s = this.task()?.status as TaskStatus;
@@ -94,17 +102,18 @@ export class TaskDetailComponent implements OnInit {
     const task = this.task();
     if (!task) return false;
     const s = task.status;
-    const role = this.currentUserRole();
     const uid = this.authStore.user()?.id;
     const isAssignee = task.assignee?.id === uid;
+    const isUnassigned = !task.assignee;
 
     if (s === 'done') return false;
-    // Review → Done requires approve; only approve/reject buttons handle it
+    // Review → Done: only via approve button
     if (s === 'review') return false;
-    // Developer: can only advance tasks assigned to themselves
-    if (role === 'developer') return isAssignee;
-    // Owner/Lead: can advance any task (except review→done, blocked above)
-    return true;
+    // todo → in_progress: only assignee (or unassigned tasks anyone can start)
+    if (s === 'todo') return isUnassigned || isAssignee;
+    // in_progress → review: only the assignee
+    if (s === 'in_progress') return isAssignee;
+    return false;
   });
 
   protected readonly priorityAppearance: Record<string, string> = {

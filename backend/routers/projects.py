@@ -32,7 +32,9 @@ def _require_project(db: Session, project_id: str) -> Project:
 
 
 def _require_task(db: Session, task_id: str) -> Task:
-    t = db.query(Task).options(joinedload(Task.assignee)).filter(Task.id == task_id).first()
+    t = db.query(Task).options(
+        joinedload(Task.assignee), joinedload(Task.project)
+    ).filter(Task.id == task_id).first()
     if not t:
         raise HTTPException(status_code=404, detail="Task not found")
     return t
@@ -56,9 +58,11 @@ def _log_out(log: TaskLog) -> TaskLogOut:
 
 
 def _task_out(task: Task) -> TaskOut:
+    team_id = task.project.team_id if task.project else ""
     return TaskOut(
         id=task.id,
         project_id=task.project_id,
+        team_id=team_id,
         title=task.title,
         description=task.description,
         status=task.status,
@@ -73,10 +77,12 @@ def _task_out(task: Task) -> TaskOut:
 
 
 def _task_detail_out(task: Task) -> TaskDetailOut:
+    team_id = task.project.team_id if task.project else ""
     logs = [_log_out(log) for log in task.logs]
     return TaskDetailOut(
         id=task.id,
         project_id=task.project_id,
+        team_id=team_id,
         title=task.title,
         description=task.description,
         status=task.status,
@@ -174,7 +180,7 @@ def list_tasks(
 ):
     project = _require_project(db, project_id)
     _require_team_member(db, project.team_id, current_user.id)
-    tasks = db.query(Task).options(joinedload(Task.assignee)).filter(Task.project_id == project_id).all()
+    tasks = db.query(Task).options(joinedload(Task.assignee), joinedload(Task.project)).filter(Task.project_id == project_id).all()
     return [_task_out(t) for t in tasks]
 
 
@@ -269,7 +275,15 @@ def update_task(
                 detail="Tasks in Review must be approved by an Owner or Lead"
             )
 
-        # Developer can only change status of tasks assigned to them
+        # Moving to IN_PROGRESS means "I'm starting work" → must be the assignee
+        if new_status == TaskStatus.IN_PROGRESS and old_status == TaskStatus.TODO:
+            if task.assignee_id and task.assignee_id != current_user.id:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Only the assignee can start this task"
+                )
+
+        # Developer can only change status of tasks assigned to them (for any transition)
         if member.role == TeamRole.DEVELOPER:
             if task.assignee_id != current_user.id:
                 raise HTTPException(
@@ -406,5 +420,5 @@ def my_tasks(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    tasks = db.query(Task).options(joinedload(Task.assignee)).filter(Task.assignee_id == current_user.id).all()
+    tasks = db.query(Task).options(joinedload(Task.assignee), joinedload(Task.project)).filter(Task.assignee_id == current_user.id).all()
     return [_task_out(t) for t in tasks]

@@ -2,7 +2,6 @@
   <header class="shell__header" role="banner">
     <nav class="shell__nav" aria-label="Main navigation">
       <a routerLink="/teams" class="shell__logo" aria-label="TaskForge home">
-        <span class="shell__logo-icon" aria-hidden="true">⚡</span>
         <span class="shell__logo-text">TaskForge</span>
       </a>
 
@@ -43,7 +42,6 @@
         <ng-template #userMenu>
           <tui-data-list role="menu" aria-label="User options">
             <p class="shell__menu-email">{{ user.email }}</p>
-            <hr class="shell__menu-divider" />
             <button tuiOption type="button" role="menuitem" (click)="logout()">
               Sign out
             </button>

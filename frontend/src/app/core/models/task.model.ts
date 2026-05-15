@@ -10,6 +10,7 @@ export interface TaskAssignee {
 export interface Task {
   id: string;
   projectId: string;
+  teamId: string;
   title: string;
   description: string | null;
   status: TaskStatus;

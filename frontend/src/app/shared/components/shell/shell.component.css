@@ -115,16 +115,11 @@
 }
 
 .shell__menu-email {
-  padding: 0.5rem 0.75rem 0.25rem;
+  padding: 0.5rem 0.75rem 0.625rem;
   font-size: 0.8125rem;
   color: var(--tui-text-secondary);
   margin: 0;
-}
-
-.shell__menu-divider {
-  border: none;
-  border-top: 1px solid var(--tui-border-normal);
-  margin: 0.25rem 0;
+  border-bottom: 1px solid var(--tui-border-normal);
 }
 
 @media (max-width: 640px) {

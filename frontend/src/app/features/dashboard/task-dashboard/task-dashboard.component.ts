@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { TuiBadge } from '@taiga-ui/kit';
 
@@ -18,6 +19,7 @@ import { TaskCardComponent } from '../../../shared/components/task-card/task-car
 export class TaskDashboardComponent implements OnInit {
   protected readonly authStore = inject(AuthStore);
   private readonly api = inject(ApiService);
+  private readonly router = inject(Router);
 
   protected readonly tasks = signal<Task[]>([]);
   protected readonly loading = signal(true);
@@ -68,5 +70,9 @@ export class TaskDashboardComponent implements OnInit {
         this.tasks.update((tasks) => tasks.map((t) => (t.id === task.id ? updated : t)));
       },
     });
+  }
+
+  protected openTask(task: Task): void {
+    this.router.navigate(['/teams', task.teamId, 'projects', task.projectId, 'tasks', task.id]);
   }
 }

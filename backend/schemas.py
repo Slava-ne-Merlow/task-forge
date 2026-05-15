@@ -121,6 +121,7 @@ class TaskLogOut(CamelModel):
 class TaskOut(CamelModel):
     id: str
     project_id: str
+    team_id: str = ""
     title: str
     description: str | None = None
     status: str
@@ -136,6 +137,7 @@ class TaskOut(CamelModel):
 class TaskDetailOut(CamelModel):
     id: str
     project_id: str
+    team_id: str = ""
     title: str
     description: str | None = None
     status: str
