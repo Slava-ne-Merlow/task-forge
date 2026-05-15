@@ -13,7 +13,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:4200",
         "http://31.177.82.157",
-        "http://31.177.82.157:80",
+        "https://31-177-82-157.nip.io",
     ],
     allow_credentials=True,
     allow_methods=["*"],
