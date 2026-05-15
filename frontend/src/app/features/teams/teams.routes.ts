@@ -14,4 +14,9 @@ export const teamsRoutes: Routes = [
     loadComponent: () =>
       import('./team-settings/team-settings.component').then((m) => m.TeamSettingsComponent),
   },
+  {
+    path: ':teamId/projects',
+    canActivate: [authGuard],
+    loadChildren: () => import('../projects/projects.routes').then((m) => m.projectsRoutes),
+  },
 ];

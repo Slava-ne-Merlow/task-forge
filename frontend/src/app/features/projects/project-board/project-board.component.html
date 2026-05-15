@@ -1,0 +1,296 @@
+<div class="board-page">
+
+  <!-- Header -->
+  <div class="board-page__header">
+    <div class="board-page__title-row">
+      <button tuiButton type="button" appearance="ghost" size="s" (click)="goBack()">
+        <tui-icon icon="@tui.arrow-left" /> Projects
+      </button>
+      @if (projectsStore.currentProject(); as p) {
+        <h1 class="board-page__title">{{ p.name }}</h1>
+      }
+    </div>
+
+    <div class="board-page__header-actions">
+      <!-- Priority filter -->
+      <button
+        tuiButton type="button" appearance="outline" size="s"
+        [tuiDropdown]="priorityMenu"
+        [tuiDropdownOpen]="priorityFilterOpen()"
+        (tuiDropdownOpenChange)="priorityFilterOpen.set($event)"
+      >
+        <tui-icon icon="@tui.filter" />
+        {{ filterPriority() ?? 'Priority' }}
+      </button>
+      <ng-template #priorityMenu>
+        <tui-data-list>
+          <button tuiOption (click)="filterPriority.set(null); priorityFilterOpen.set(false)">All priorities</button>
+          @for (p of priorities; track p.value) {
+            <button tuiOption (click)="filterPriority.set(p.value); priorityFilterOpen.set(false)">{{ p.label }}</button>
+          }
+        </tui-data-list>
+      </ng-template>
+
+      <!-- Assignee filter -->
+      <button
+        tuiButton type="button" appearance="outline" size="s"
+        [tuiDropdown]="assigneeMenu"
+        [tuiDropdownOpen]="assigneeFilterOpen()"
+        (tuiDropdownOpenChange)="assigneeFilterOpen.set($event)"
+      >
+        <tui-icon icon="@tui.user" />
+        {{ filterAssigneeId() ? getMemberName(filterAssigneeId()!) : 'Assignee' }}
+      </button>
+      <ng-template #assigneeMenu>
+        <tui-data-list>
+          <button tuiOption (click)="filterAssigneeId.set(null); assigneeFilterOpen.set(false)">All members</button>
+          @for (m of teamsStore.members(); track m.id) {
+            <button tuiOption (click)="filterAssigneeId.set(m.user.id); assigneeFilterOpen.set(false)">{{ m.user.name }}</button>
+          }
+        </tui-data-list>
+      </ng-template>
+
+      @if (filterPriority() || filterAssigneeId()) {
+        <button tuiButton type="button" appearance="flat" size="s" (click)="clearFilters()">
+          Clear filters
+        </button>
+      }
+
+      @if (canManage()) {
+        <button tuiButton type="button" appearance="primary" size="m" (click)="openCreateForm()">
+          <tui-icon icon="@tui.plus" /> Add task
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (projectsStore.error()) {
+    <div class="board-page__error" role="alert">{{ projectsStore.error() }}</div>
+  }
+
+  <!-- Create task form -->
+  @if (showCreateForm()) {
+    <form class="create-card" [formGroup]="createForm" (ngSubmit)="submitCreate()" novalidate aria-label="Create task">
+      <h2 class="create-card__title">New task</h2>
+
+      <!-- Title — full width -->
+      <tui-textfield>
+        <label tuiLabel for="task-title">Title *</label>
+        <input id="task-title" tuiInput formControlName="title" placeholder="What needs to be done?" />
+        <tui-error formControlName="title" [order]="['required', 'minlength']" />
+      </tui-textfield>
+
+      <!-- Row: Priority | Assignee | Deadline | Est. hours -->
+      <div class="create-card__row">
+        <div class="form-dropdown-group">
+          <span class="form-dropdown-label">Priority</span>
+          <button
+            tuiButton type="button" appearance="outline" size="m" class="form-dropdown-btn"
+            [tuiDropdown]="createPriorityTpl"
+            [tuiDropdownOpen]="createPriorityOpen()"
+            (tuiDropdownOpenChange)="createPriorityOpen.set($event)"
+          >
+            {{ priorityLabel(createForm.get('priority')!.value) }}
+            <tui-icon icon="@tui.chevron-down" />
+          </button>
+          <ng-template #createPriorityTpl>
+            <tui-data-list>
+              @for (p of priorities; track p.value) {
+                <button tuiOption type="button"
+                  [class.tui-option--active]="createForm.get('priority')!.value === p.value"
+                  (click)="createForm.get('priority')!.setValue(p.value); createPriorityOpen.set(false)">
+                  {{ p.label }}
+                </button>
+              }
+            </tui-data-list>
+          </ng-template>
+        </div>
+
+        <div class="form-dropdown-group">
+          <span class="form-dropdown-label">Assignee</span>
+          <button
+            tuiButton type="button" appearance="outline" size="m" class="form-dropdown-btn"
+            [tuiDropdown]="createAssigneeTpl"
+            [tuiDropdownOpen]="createAssigneeOpen()"
+            (tuiDropdownOpenChange)="createAssigneeOpen.set($event)"
+          >
+            <tui-icon icon="@tui.user" />
+            {{ assigneeLabel(createForm.get('assigneeId')!.value) }}
+            <tui-icon icon="@tui.chevron-down" />
+          </button>
+          <ng-template #createAssigneeTpl>
+            <tui-data-list>
+              <button tuiOption type="button"
+                (click)="createForm.get('assigneeId')!.setValue(''); createAssigneeOpen.set(false)">
+                Unassigned
+              </button>
+              @for (m of teamsStore.members(); track m.id) {
+                <button tuiOption type="button"
+                  [class.tui-option--active]="createForm.get('assigneeId')!.value === m.user.id"
+                  (click)="createForm.get('assigneeId')!.setValue(m.user.id); createAssigneeOpen.set(false)">
+                  {{ m.user.name }}
+                </button>
+              }
+            </tui-data-list>
+          </ng-template>
+        </div>
+
+        <tui-textfield class="form-field-compact">
+          <label tuiLabel for="task-deadline">Deadline</label>
+          <input id="task-deadline" tuiInput type="date" formControlName="deadline" />
+        </tui-textfield>
+
+        <tui-textfield class="form-field-compact">
+          <label tuiLabel for="task-hours">Est. hours</label>
+          <input id="task-hours" tuiInput type="number" formControlName="estimatedHours" placeholder="0" min="0" />
+        </tui-textfield>
+      </div>
+
+      <!-- Description — full width -->
+      <tui-textfield>
+        <label tuiLabel for="task-desc">Description</label>
+        <input id="task-desc" tuiInput formControlName="description" placeholder="Optional details…" />
+      </tui-textfield>
+
+      <div class="create-card__actions">
+        <button tuiButton type="button" appearance="flat" size="m" (click)="cancelCreate()">Cancel</button>
+        <button tuiButton type="submit" appearance="primary" size="m" [loading]="projectsStore.tasksLoading()">
+          Create task
+        </button>
+      </div>
+    </form>
+  }
+
+  <!-- Edit task drawer -->
+  @if (editingTask()) {
+    <div class="edit-overlay" role="dialog" aria-modal="true" aria-label="Edit task">
+      <form class="edit-drawer" [formGroup]="editForm" (ngSubmit)="submitEdit()" novalidate>
+        <div class="edit-drawer__header">
+          <h2 class="edit-drawer__title">Edit task</h2>
+          <button tuiButton type="button" appearance="ghost" size="s" (click)="cancelEdit()" aria-label="Close">
+            <tui-icon icon="@tui.x" />
+          </button>
+        </div>
+
+        <div class="edit-drawer__body">
+          <tui-textfield>
+            <label tuiLabel for="edit-title">Title *</label>
+            <input id="edit-title" tuiInput formControlName="title" />
+            <tui-error formControlName="title" [order]="['required']" />
+          </tui-textfield>
+
+          <tui-textfield>
+            <label tuiLabel for="edit-desc">Description</label>
+            <input id="edit-desc" tuiInput formControlName="description" />
+          </tui-textfield>
+
+          <div class="edit-drawer__row">
+            <div class="form-dropdown-group">
+              <label class="form-dropdown-label">Assignee</label>
+              <button
+                tuiButton type="button" appearance="outline" size="m" class="form-dropdown-btn"
+                [tuiDropdown]="editAssigneeTpl"
+                [tuiDropdownOpen]="editAssigneeOpen()"
+                (tuiDropdownOpenChange)="editAssigneeOpen.set($event)"
+              >
+                {{ assigneeLabel(editForm.get('assigneeId')!.value) }}
+                <tui-icon icon="@tui.chevron-down" />
+              </button>
+              <ng-template #editAssigneeTpl>
+                <tui-data-list>
+                  <button tuiOption type="button"
+                    (click)="editForm.get('assigneeId')!.setValue(''); editAssigneeOpen.set(false)">
+                    Unassigned
+                  </button>
+                  @for (m of teamsStore.members(); track m.id) {
+                    <button tuiOption type="button"
+                      [class.tui-option--active]="editForm.get('assigneeId')!.value === m.user.id"
+                      (click)="editForm.get('assigneeId')!.setValue(m.user.id); editAssigneeOpen.set(false)">
+                      {{ m.user.name }}
+                    </button>
+                  }
+                </tui-data-list>
+              </ng-template>
+            </div>
+
+            <div class="form-dropdown-group">
+              <label class="form-dropdown-label">Priority</label>
+              <button
+                tuiButton type="button" appearance="outline" size="m" class="form-dropdown-btn"
+                [tuiDropdown]="editPriorityTpl"
+                [tuiDropdownOpen]="editPriorityOpen()"
+                (tuiDropdownOpenChange)="editPriorityOpen.set($event)"
+              >
+                {{ priorityLabel(editForm.get('priority')!.value) }}
+                <tui-icon icon="@tui.chevron-down" />
+              </button>
+              <ng-template #editPriorityTpl>
+                <tui-data-list>
+                  @for (p of priorities; track p.value) {
+                    <button tuiOption type="button"
+                      [class.tui-option--active]="editForm.get('priority')!.value === p.value"
+                      (click)="editForm.get('priority')!.setValue(p.value); editPriorityOpen.set(false)">
+                      {{ p.label }}
+                    </button>
+                  }
+                </tui-data-list>
+              </ng-template>
+            </div>
+          </div>
+
+          <div class="edit-drawer__row">
+            <tui-textfield>
+              <label tuiLabel for="edit-deadline">Deadline</label>
+              <input id="edit-deadline" tuiInput type="date" formControlName="deadline" />
+            </tui-textfield>
+            <tui-textfield>
+              <label tuiLabel for="edit-est">Est. hours</label>
+              <input id="edit-est" tuiInput type="number" formControlName="estimatedHours" min="0" />
+            </tui-textfield>
+            <tui-textfield>
+              <label tuiLabel for="edit-logged">Logged hours</label>
+              <input id="edit-logged" tuiInput type="number" formControlName="loggedHours" min="0" />
+            </tui-textfield>
+          </div>
+        </div>
+
+        <div class="edit-drawer__footer">
+          <button tuiButton type="button" appearance="flat" size="m" (click)="cancelEdit()">Cancel</button>
+          <button tuiButton type="submit" appearance="primary" size="m">Save</button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <!-- Kanban board -->
+  @if (projectsStore.tasksLoading()) {
+    <div class="board-page__loader"><span class="loader-spinner"></span></div>
+  } @else {
+    <div class="kanban" role="list" aria-label="Task board">
+      @for (col of filteredTasksByStatus(); track col.value) {
+        <div class="kanban__col" role="listitem">
+          <div class="kanban__col-header">
+            <h2 class="kanban__col-title">{{ col.label }}</h2>
+            <span tuiBadge appearance="neutral" size="s">{{ col.tasks.length }}</span>
+          </div>
+
+          <div class="kanban__col-body">
+            @for (task of col.tasks; track task.id) {
+              <app-task-card
+                [task]="task"
+                [canEdit]="canManage()"
+                (statusChange)="onStatusChange(task, $event)"
+                (editClick)="openEdit(task)"
+                (deleteClick)="deleteTask(task)"
+              />
+            }
+            @if (!col.tasks.length) {
+              <div class="kanban__empty">No tasks</div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>

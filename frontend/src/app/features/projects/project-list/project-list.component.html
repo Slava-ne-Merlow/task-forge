@@ -1,0 +1,83 @@
+<div class="projects-page">
+  <div class="projects-page__header">
+    <div class="projects-page__title-row">
+      <button tuiButton type="button" appearance="ghost" size="s" (click)="goBack()">
+        <tui-icon icon="@tui.arrow-left" /> Back
+      </button>
+      @if (teamsStore.currentTeam(); as team) {
+        <h1 class="projects-page__title">{{ team.name }} — Projects</h1>
+      }
+    </div>
+
+    @if (isOwner()) {
+      <button tuiButton type="button" appearance="primary" size="m" (click)="openCreate()">
+        <tui-icon icon="@tui.plus" /> New project
+      </button>
+    }
+  </div>
+
+  @if (showCreateForm()) {
+    <form
+      class="create-card"
+      [formGroup]="form"
+      (ngSubmit)="submitCreate()"
+      novalidate
+      aria-label="Create project"
+    >
+      <h2 class="create-card__title">New project</h2>
+
+      <tui-textfield>
+        <label tuiLabel for="proj-name">Project name</label>
+        <input id="proj-name" tuiInput formControlName="name" placeholder="e.g. Mobile App v2" />
+        <tui-error formControlName="name" [order]="['required', 'minlength']" />
+      </tui-textfield>
+
+      <tui-textfield>
+        <label tuiLabel for="proj-desc">Description (optional)</label>
+        <input id="proj-desc" tuiInput formControlName="description" placeholder="What is this project about?" />
+      </tui-textfield>
+
+      <div class="create-card__actions">
+        <button tuiButton type="button" appearance="flat" size="m" (click)="cancelCreate()">Cancel</button>
+        <button tuiButton type="submit" appearance="primary" size="m" [loading]="projectsStore.loading()">
+          Create
+        </button>
+      </div>
+    </form>
+  }
+
+  @if (projectsStore.error()) {
+    <div class="projects-page__error" role="alert">{{ projectsStore.error() }}</div>
+  }
+
+  @if (projectsStore.loading() && !projectsStore.projects().length) {
+    <div class="projects-page__loader" aria-label="Loading projects">
+      <span class="loader-spinner" aria-hidden="true"></span>
+    </div>
+  } @else if (!projectsStore.projects().length) {
+    <div class="projects-page__empty">
+      <tui-icon icon="@tui.folder-open" class="projects-page__empty-icon" />
+      <p>No projects yet.</p>
+      @if (isOwner()) {
+        <p>Create the first project for your team.</p>
+      }
+    </div>
+  } @else {
+    <ul class="project-grid" aria-label="Projects">
+      @for (project of projectsStore.projects(); track project.id) {
+        <li class="project-card" (click)="openProject(project.id)" role="button" tabindex="0">
+          <div class="project-card__header">
+            <h2 class="project-card__name">{{ project.name }}</h2>
+            <span tuiBadge appearance="neutral" size="s">
+              {{ project.taskCount }} {{ project.taskCount === 1 ? 'task' : 'tasks' }}
+            </span>
+          </div>
+          @if (project.description) {
+            <p class="project-card__desc">{{ project.description }}</p>
+          }
+          <p class="project-card__date">Created {{ project.createdAt | date: 'dd MMM yyyy' }}</p>
+        </li>
+      }
+    </ul>
+  }
+</div>

@@ -57,4 +57,8 @@ export class TeamListComponent implements OnInit {
   protected goToSettings(teamId: string): void {
     this.router.navigate(['/teams', teamId, 'settings']);
   }
+
+  protected goToProjects(teamId: string): void {
+    this.router.navigate(['/teams', teamId, 'projects']);
+  }
 }

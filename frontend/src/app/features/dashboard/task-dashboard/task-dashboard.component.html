@@ -1,0 +1,85 @@
+<div class="dashboard">
+  <div class="dashboard__header">
+    <div>
+      <h1 class="dashboard__title">My Tasks</h1>
+      <p class="dashboard__subtitle">{{ authStore.user()?.name }}</p>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  @if (!loading() && tasks().length) {
+    <div class="stats-row" role="list" aria-label="Task statistics">
+      <div class="stat-card" role="listitem">
+        <span class="stat-card__value">{{ stats().total }}</span>
+        <span class="stat-card__label">Total</span>
+      </div>
+      <div class="stat-card stat-card--info" role="listitem">
+        <span class="stat-card__value">{{ stats().inProgress }}</span>
+        <span class="stat-card__label">In Progress</span>
+      </div>
+      <div class="stat-card" [class.stat-card--danger]="stats().overdue > 0" role="listitem">
+        <span class="stat-card__value">{{ stats().overdue }}</span>
+        <span class="stat-card__label">Overdue</span>
+      </div>
+      <div class="stat-card stat-card--success" role="listitem">
+        <span class="stat-card__value">{{ stats().done }}</span>
+        <span class="stat-card__label">Done</span>
+      </div>
+    </div>
+  }
+
+  <!-- Status filter tabs -->
+  <div class="filter-tabs" role="tablist" aria-label="Filter by status">
+    <button
+      tuiButton type="button" size="s"
+      [appearance]="filterStatus() === 'all' ? 'primary' : 'outline'"
+      (click)="filterStatus.set('all')"
+      role="tab"
+      [attr.aria-selected]="filterStatus() === 'all'"
+    >
+      All
+    </button>
+    @for (s of statuses; track s.value) {
+      <button
+        tuiButton type="button" size="s"
+        [appearance]="filterStatus() === s.value ? 'primary' : 'outline'"
+        (click)="filterStatus.set(s.value)"
+        role="tab"
+        [attr.aria-selected]="filterStatus() === s.value"
+      >
+        {{ s.label }}
+      </button>
+    }
+  </div>
+
+  @if (error()) {
+    <div class="dashboard__error" role="alert">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="dashboard__loader"><span class="loader-spinner"></span></div>
+  } @else if (!filteredTasks().length) {
+    <div class="dashboard__empty">
+      <tui-icon icon="@tui.check-circle" class="dashboard__empty-icon" />
+      <p>
+        @if (filterStatus() === 'all') {
+          No tasks assigned to you yet.
+        } @else {
+          No {{ filterStatus().replace('_', ' ') }} tasks.
+        }
+      </p>
+    </div>
+  } @else {
+    <div class="task-list" role="list" aria-label="My tasks">
+      @for (task of filteredTasks(); track task.id) {
+        <div role="listitem">
+          <app-task-card
+            [task]="task"
+            [showProject]="true"
+            (statusChange)="onStatusChange(task, $event)"
+          />
+        </div>
+      }
+    </div>
+  }
+</div>

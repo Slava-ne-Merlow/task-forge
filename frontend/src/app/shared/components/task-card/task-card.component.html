@@ -1,0 +1,101 @@
+<article class="task-card" [class.task-card--overdue]="isOverdue()">
+  <div class="task-card__header">
+    <div class="task-card__badges">
+      <span
+        tuiBadge
+        [appearance]="priorityAppearance[task().priority] ?? 'neutral'"
+        size="s"
+        class="task-card__priority"
+      >
+        {{ task().priority }}
+      </span>
+      <span tuiBadge appearance="neutral" size="s" class="task-card__status">
+        {{ task().status.replace('_', ' ') }}
+      </span>
+    </div>
+
+    @if (canEdit()) {
+      <div class="task-card__actions">
+        <button
+          tuiButton
+          type="button"
+          appearance="ghost"
+          size="xs"
+          (click)="editClick.emit()"
+          aria-label="Edit task"
+        >
+          <tui-icon icon="@tui.pencil" />
+        </button>
+        <button
+          tuiButton
+          type="button"
+          appearance="ghost"
+          size="xs"
+          (click)="deleteClick.emit()"
+          aria-label="Delete task"
+        >
+          <tui-icon icon="@tui.trash" />
+        </button>
+      </div>
+    }
+  </div>
+
+  @if (showProject() && projectName()) {
+    <p class="task-card__project">{{ projectName() }}</p>
+  }
+
+  <h3 class="task-card__title">{{ task().title }}</h3>
+
+  @if (task().description) {
+    <p class="task-card__desc">{{ task().description }}</p>
+  }
+
+  <div class="task-card__meta">
+    @if (task().assignee) {
+      <div class="task-card__assignee">
+        <span class="task-card__avatar" aria-hidden="true">
+          {{ task().assignee!.name.charAt(0).toUpperCase() }}
+        </span>
+        <span class="task-card__assignee-name">{{ task().assignee!.name }}</span>
+      </div>
+    } @else {
+      <span class="task-card__unassigned">Unassigned</span>
+    }
+
+    @if (task().deadline) {
+      <span class="task-card__deadline" [class.task-card__deadline--overdue]="isOverdue()">
+        <tui-icon icon="@tui.calendar" />
+        {{ task().deadline! | date: 'dd MMM' }}
+      </span>
+    }
+  </div>
+
+  @if (progressPercent() !== null) {
+    <div class="task-card__progress" [attr.aria-label]="'Progress: ' + progressPercent() + '%'">
+      <div class="task-card__progress-bar">
+        <div
+          class="task-card__progress-fill"
+          [style.width.%]="progressPercent()"
+          [class.task-card__progress-fill--done]="task().status === 'done'"
+        ></div>
+      </div>
+      <span class="task-card__progress-label">
+        {{ task().loggedHours }}h / {{ task().estimatedHours }}h
+      </span>
+    </div>
+  }
+
+  @if (task().status !== 'done') {
+    <button
+      tuiButton
+      type="button"
+      appearance="flat"
+      size="xs"
+      class="task-card__advance"
+      (click)="nextStatus()"
+    >
+      Move to {{ statusOrder[statusOrder.indexOf(task().status) + 1]?.replace('_', ' ') }}
+      <tui-icon icon="@tui.arrow-right" />
+    </button>
+  }
+</article>

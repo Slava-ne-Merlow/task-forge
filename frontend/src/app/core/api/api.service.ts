@@ -3,6 +3,8 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 import { Invitation } from '../models/invitation.model';
+import { Project } from '../models/project.model';
+import { Task, TaskPriority, TaskStatus } from '../models/task.model';
 import { Team, TeamMember, TeamRole } from '../models/team.model';
 import { User } from '../models/user.model';
 
@@ -82,5 +84,73 @@ export class ApiService {
 
   joinViaInvitation(token: string): Observable<{ message: string }> {
     return this.http.post<{ message: string }>(`${API}/invitations/${token}/join`, {});
+  }
+
+  // Projects
+  getProjects(teamId: string): Observable<Project[]> {
+    return this.http.get<Project[]>(`${API}/teams/${teamId}/projects`);
+  }
+
+  createProject(teamId: string, name: string, description?: string): Observable<Project> {
+    return this.http.post<Project>(`${API}/teams/${teamId}/projects`, { name, description });
+  }
+
+  // Tasks
+  getTasks(projectId: string): Observable<Task[]> {
+    return this.http.get<Task[]>(`${API}/projects/${projectId}/tasks`);
+  }
+
+  createTask(
+    projectId: string,
+    body: {
+      title: string;
+      description?: string;
+      assigneeId?: string;
+      deadline?: string;
+      estimatedHours?: number;
+      priority?: TaskPriority;
+    },
+  ): Observable<Task> {
+    return this.http.post<Task>(`${API}/projects/${projectId}/tasks`, {
+      title: body.title,
+      description: body.description,
+      assignee_id: body.assigneeId,
+      deadline: body.deadline,
+      estimated_hours: body.estimatedHours,
+      priority: body.priority ?? 'medium',
+    });
+  }
+
+  updateTask(
+    taskId: string,
+    body: {
+      status?: TaskStatus;
+      title?: string;
+      description?: string;
+      assigneeId?: string | null;
+      deadline?: string | null;
+      estimatedHours?: number | null;
+      loggedHours?: number;
+      priority?: TaskPriority;
+    },
+  ): Observable<Task> {
+    const payload: Record<string, unknown> = {};
+    if (body.status !== undefined) payload['status'] = body.status;
+    if (body.title !== undefined) payload['title'] = body.title;
+    if (body.description !== undefined) payload['description'] = body.description;
+    if (body.assigneeId !== undefined) payload['assignee_id'] = body.assigneeId ?? '';
+    if (body.deadline !== undefined) payload['deadline'] = body.deadline;
+    if (body.estimatedHours !== undefined) payload['estimated_hours'] = body.estimatedHours;
+    if (body.loggedHours !== undefined) payload['logged_hours'] = body.loggedHours;
+    if (body.priority !== undefined) payload['priority'] = body.priority;
+    return this.http.patch<Task>(`${API}/tasks/${taskId}`, payload);
+  }
+
+  deleteTask(taskId: string): Observable<void> {
+    return this.http.delete<void>(`${API}/tasks/${taskId}`);
+  }
+
+  getMyTasks(): Observable<Task[]> {
+    return this.http.get<Task[]>(`${API}/me/tasks`);
   }
 }

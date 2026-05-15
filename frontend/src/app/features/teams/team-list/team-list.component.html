@@ -82,17 +82,23 @@
               size="s"
             >{{ team.myRole }}</span>
           </div>
-          <button
-            tuiButton
-            type="button"
-            appearance="ghost"
-            size="s"
-            (click)="$event.stopPropagation(); goToSettings(team.id)"
-            [attr.aria-label]="'Settings for ' + team.name"
-          >
-            <tui-icon icon="@tui.settings" />
-            Settings
-          </button>
+          <div class="team-card__buttons">
+            <button
+              tuiButton type="button" appearance="primary" size="s"
+              (click)="$event.stopPropagation(); goToProjects(team.id)"
+              [attr.aria-label]="'Projects for ' + team.name"
+            >
+              <tui-icon icon="@tui.folder" />
+              Projects
+            </button>
+            <button
+              tuiButton type="button" appearance="ghost" size="s"
+              (click)="$event.stopPropagation(); goToSettings(team.id)"
+              [attr.aria-label]="'Settings for ' + team.name"
+            >
+              <tui-icon icon="@tui.settings" />
+            </button>
+          </div>
         </li>
       }
     </ul>
