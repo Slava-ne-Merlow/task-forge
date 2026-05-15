@@ -15,10 +15,18 @@
         >
           Teams
         </a>
-        <a routerLink="/projects" routerLinkActive="shell__nav-link--active" class="shell__nav-link">
+        <a
+          routerLink="/projects"
+          routerLinkActive="shell__nav-link--active"
+          class="shell__nav-link"
+        >
           Projects
         </a>
-        <a routerLink="/dashboard" routerLinkActive="shell__nav-link--active" class="shell__nav-link">
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="shell__nav-link--active"
+          class="shell__nav-link"
+        >
           My Tasks
         </a>
       </div>
@@ -31,7 +39,7 @@
         type="button"
         [attr.aria-expanded]="burgerOpen()"
         aria-label="Toggle navigation"
-        (click)="burgerOpen.update(v => !v)"
+        (click)="burgerOpen.update((v) => !v)"
       >
         <span class="shell__burger-line"></span>
         <span class="shell__burger-line"></span>
