@@ -96,166 +96,172 @@
 
   <!-- Members Section -->
   @if (activeTab() === 'members') {
-  <section class="settings-section" aria-labelledby="members-heading">
-    <h2 id="members-heading" class="settings-section__title">
-      Members
-      <span class="settings-section__count">{{ teamsStore.members().length }}</span>
-    </h2>
+    <section class="settings-section" aria-labelledby="members-heading">
+      <h2 id="members-heading" class="settings-section__title">
+        Members
+        <span class="settings-section__count">{{ teamsStore.members().length }}</span>
+      </h2>
 
-    @if (teamsStore.membersLoading()) {
-      <div class="settings-page__loader" aria-label="Loading members">
-        <span class="loader-spinner" aria-hidden="true"></span>
-      </div>
-    } @else {
-      <ul class="members-list" aria-label="Team members">
-        @for (member of teamsStore.members(); track member.id) {
-          <li class="member-card">
-            <div class="member-card__avatar" aria-hidden="true">
-              {{ member.user.name.charAt(0).toUpperCase() }}
-            </div>
+      @if (teamsStore.membersLoading()) {
+        <div class="settings-page__loader" aria-label="Loading members">
+          <span class="loader-spinner" aria-hidden="true"></span>
+        </div>
+      } @else {
+        <ul class="members-list" aria-label="Team members">
+          @for (member of teamsStore.members(); track member.id) {
+            <li class="member-card">
+              <div class="member-card__avatar" aria-hidden="true">
+                {{ member.user.name.charAt(0).toUpperCase() }}
+              </div>
 
-            <div class="member-card__info">
-              <span class="member-card__name">{{ member.user.name }}</span>
-              <span class="member-card__email">{{ member.user.email }}</span>
-            </div>
+              <div class="member-card__info">
+                <span class="member-card__name">{{ member.user.name }}</span>
+                <span class="member-card__email">{{ member.user.email }}</span>
+              </div>
 
-            <div class="member-card__role">
+              <div class="member-card__role">
+                @if (isOwner() && member.role !== 'owner') {
+                  <button
+                    tuiButton
+                    type="button"
+                    appearance="outline"
+                    size="s"
+                    class="member-card__role-btn"
+                    [tuiDropdown]="roleMenu"
+                    [tuiDropdownOpen]="isRoleDropdownOpen(member.id)"
+                    (tuiDropdownOpenChange)="toggleRoleDropdown(member.id, $event)"
+                    [attr.aria-label]="'Change role for ' + member.user.name"
+                    aria-haspopup="listbox"
+                  >
+                    {{ member.role }}
+                    <tui-icon icon="@tui.chevron-down" />
+                  </button>
+                  <ng-template #roleMenu>
+                    <tui-data-list role="listbox">
+                      @for (role of roleOptions; track role) {
+                        <button
+                          tuiOption
+                          type="button"
+                          role="option"
+                          [class.active]="role === member.role"
+                          (click)="changeRole(member, role)"
+                        >
+                          {{ role }}
+                        </button>
+                      }
+                    </tui-data-list>
+                  </ng-template>
+                } @else {
+                  <span
+                    tuiBadge
+                    [appearance]="
+                      member.role === 'owner'
+                        ? 'primary'
+                        : member.role === 'lead'
+                          ? 'info'
+                          : 'neutral'
+                    "
+                    size="s"
+                  >
+                    {{ member.role }}
+                  </span>
+                }
+              </div>
+
               @if (isOwner() && member.role !== 'owner') {
                 <button
                   tuiButton
                   type="button"
-                  appearance="outline"
+                  appearance="destructive"
                   size="s"
-                  class="member-card__role-btn"
-                  [tuiDropdown]="roleMenu"
-                  [tuiDropdownOpen]="isRoleDropdownOpen(member.id)"
-                  (tuiDropdownOpenChange)="toggleRoleDropdown(member.id, $event)"
-                  [attr.aria-label]="'Change role for ' + member.user.name"
-                  aria-haspopup="listbox"
+                  (click)="removeMember(member)"
+                  [attr.aria-label]="'Remove ' + member.user.name + ' from team'"
                 >
-                  {{ member.role }}
-                  <tui-icon icon="@tui.chevron-down" />
+                  <tui-icon icon="@tui.trash" />
                 </button>
-                <ng-template #roleMenu>
-                  <tui-data-list role="listbox">
-                    @for (role of roleOptions; track role) {
-                      <button
-                        tuiOption
-                        type="button"
-                        role="option"
-                        [class.active]="role === member.role"
-                        (click)="changeRole(member, role)"
-                      >
-                        {{ role }}
-                      </button>
-                    }
-                  </tui-data-list>
-                </ng-template>
-              } @else {
-                <span
-                  tuiBadge
-                  [appearance]="
-                    member.role === 'owner'
-                      ? 'primary'
-                      : member.role === 'lead'
-                        ? 'info'
-                        : 'neutral'
-                  "
-                  size="s"
-                >
-                  {{ member.role }}
-                </span>
               }
-            </div>
-
-            @if (isOwner() && member.role !== 'owner') {
-              <button
-                tuiButton
-                type="button"
-                appearance="destructive"
-                size="s"
-                (click)="removeMember(member)"
-                [attr.aria-label]="'Remove ' + member.user.name + ' from team'"
-              >
-                <tui-icon icon="@tui.trash" />
-              </button>
-            }
-          </li>
-        }
-      </ul>
-    }
-  </section>
-  } <!-- end members tab -->
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+  <!-- end members tab -->
 
   <!-- Workload Section -->
   @if (activeTab() === 'workload') {
-  <section class="settings-section" aria-labelledby="workload-heading">
-    <h2 id="workload-heading" class="settings-section__title">Team Workload</h2>
-    <p class="settings-section__desc">Task distribution and time tracking across team members.</p>
+    <section class="settings-section" aria-labelledby="workload-heading">
+      <h2 id="workload-heading" class="settings-section__title">Team Workload</h2>
+      <p class="settings-section__desc">Task distribution and time tracking across team members.</p>
 
-    @if (workloadLoading()) {
-      <div class="settings-page__loader"><span class="loader-spinner"></span></div>
-    } @else {
-      <div class="workload-table" role="table" aria-label="Team workload">
-        <div class="workload-table__head" role="row">
-          <span role="columnheader">Member</span>
-          <span role="columnheader">Todo</span>
-          <span role="columnheader">In Progress</span>
-          <span role="columnheader">Review</span>
-          <span role="columnheader">Done</span>
-          <span role="columnheader">Logged / Est.</span>
-        </div>
-        @for (row of workload(); track row.userId) {
-          <div class="workload-table__row" role="row">
-            <div class="workload-table__member" role="cell">
-              <span class="member-card__avatar" aria-hidden="true">
-                {{ row.name.charAt(0).toUpperCase() }}
-              </span>
-              <div>
-                <div class="workload-table__name">{{ row.name }}</div>
-                <div class="workload-table__role">
-                  <span
-                    tuiBadge
-                    [appearance]="row.role === 'owner' ? 'primary' : row.role === 'lead' ? 'info' : 'neutral'"
-                    size="s"
-                  >{{ row.role }}</span>
+      @if (workloadLoading()) {
+        <div class="settings-page__loader"><span class="loader-spinner"></span></div>
+      } @else {
+        <div class="workload-table" role="table" aria-label="Team workload">
+          <div class="workload-table__head" role="row">
+            <span role="columnheader">Member</span>
+            <span role="columnheader">Todo</span>
+            <span role="columnheader">In Progress</span>
+            <span role="columnheader">Review</span>
+            <span role="columnheader">Done</span>
+            <span role="columnheader">Logged / Est.</span>
+          </div>
+          @for (row of workload(); track row.userId) {
+            <div class="workload-table__row" role="row">
+              <div class="workload-table__member" role="cell">
+                <span class="member-card__avatar" aria-hidden="true">
+                  {{ row.name.charAt(0).toUpperCase() }}
+                </span>
+                <div>
+                  <div class="workload-table__name">{{ row.name }}</div>
+                  <div class="workload-table__role">
+                    <span
+                      tuiBadge
+                      [appearance]="
+                        row.role === 'owner' ? 'primary' : row.role === 'lead' ? 'info' : 'neutral'
+                      "
+                      size="s"
+                      >{{ row.role }}</span
+                    >
+                  </div>
                 </div>
               </div>
-            </div>
-            <span class="workload-table__num" role="cell">{{ row.tasksByStatus.todo }}</span>
-            <span class="workload-table__num workload-table__num--active" role="cell">
-              {{ row.tasksByStatus.in_progress }}
-            </span>
-            <span class="workload-table__num workload-table__num--review" role="cell">
-              {{ row.tasksByStatus.review }}
-            </span>
-            <span class="workload-table__num workload-table__num--done" role="cell">
-              {{ row.tasksByStatus.done }}
-            </span>
-            <div class="workload-table__hours" role="cell">
-              <span
-                [class.workload-table__hours--over]="row.estimatedHours > 0 && row.loggedHours > row.estimatedHours"
-              >
-                {{ row.loggedHours }}h
+              <span class="workload-table__num" role="cell">{{ row.tasksByStatus.todo }}</span>
+              <span class="workload-table__num workload-table__num--active" role="cell">
+                {{ row.tasksByStatus.in_progress }}
               </span>
-              @if (row.estimatedHours > 0) {
-                <span class="workload-table__hours-est"> / {{ row.estimatedHours }}h</span>
-              }
-              @if (row.estimatedHours > 0) {
-                <div class="workload-bar">
-                  <div
-                    class="workload-bar__fill"
-                    [style.width.%]="Math.min(100, (row.loggedHours / row.estimatedHours) * 100)"
-                    [class.workload-bar__fill--over]="row.loggedHours > row.estimatedHours"
-                  ></div>
-                </div>
-              }
+              <span class="workload-table__num workload-table__num--review" role="cell">
+                {{ row.tasksByStatus.review }}
+              </span>
+              <span class="workload-table__num workload-table__num--done" role="cell">
+                {{ row.tasksByStatus.done }}
+              </span>
+              <div class="workload-table__hours" role="cell">
+                <span
+                  [class.workload-table__hours--over]="
+                    row.estimatedHours > 0 && row.loggedHours > row.estimatedHours
+                  "
+                >
+                  {{ row.loggedHours }}h
+                </span>
+                @if (row.estimatedHours > 0) {
+                  <span class="workload-table__hours-est"> / {{ row.estimatedHours }}h</span>
+                }
+                @if (row.estimatedHours > 0) {
+                  <div class="workload-bar">
+                    <div
+                      class="workload-bar__fill"
+                      [style.width.%]="Math.min(100, (row.loggedHours / row.estimatedHours) * 100)"
+                      [class.workload-bar__fill--over]="row.loggedHours > row.estimatedHours"
+                    ></div>
+                  </div>
+                }
+              </div>
             </div>
-          </div>
-        }
-      </div>
-    }
-  </section>
-  } <!-- end workload tab -->
-
+          }
+        </div>
+      }
+    </section>
+  }
+  <!-- end workload tab -->
 </div>

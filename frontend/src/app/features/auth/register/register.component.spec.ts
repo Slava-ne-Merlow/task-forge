@@ -8,7 +8,6 @@ describe('RegisterComponent', () => {
   let component: RegisterComponent;
 
   beforeEach(async () => {
-
     await TestBed.configureTestingModule({
       imports: [RegisterComponent],
       providers: TEST_PROVIDERS,

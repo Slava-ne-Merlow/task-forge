@@ -7,7 +7,6 @@ describe('TeamListComponent', () => {
   let component: TeamListComponent;
 
   beforeEach(async () => {
-
     await TestBed.configureTestingModule({
       imports: [TeamListComponent],
       providers: TEST_PROVIDERS,

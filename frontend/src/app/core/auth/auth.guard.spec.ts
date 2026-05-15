@@ -1,5 +1,10 @@
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRouteSnapshot, provideRouter, Router, RouterStateSnapshot } from '@angular/router';
+import {
+  ActivatedRouteSnapshot,
+  provideRouter,
+  Router,
+  RouterStateSnapshot,
+} from '@angular/router';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { authGuard, guestGuard } from './auth.guard';
 import { TokenService } from './token.service';

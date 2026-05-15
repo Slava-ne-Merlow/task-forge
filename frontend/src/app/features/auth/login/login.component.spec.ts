@@ -8,7 +8,6 @@ describe('LoginComponent', () => {
   let component: LoginComponent;
 
   beforeEach(async () => {
-
     await TestBed.configureTestingModule({
       imports: [LoginComponent],
       providers: TEST_PROVIDERS,
