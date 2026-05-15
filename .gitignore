@@ -50,3 +50,7 @@ backend/**/__pycache__/
 backend/*.db
 backend/*.db-journal
 .angular/
+
+# Keys
+deploy_key.txt
+*.pem

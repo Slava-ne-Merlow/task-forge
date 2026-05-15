@@ -52,6 +52,30 @@
     }
   </div>
 
+  <!-- Search + Sort row -->
+  <div class="dashboard__toolbar">
+    <div class="board-search">
+      <tui-icon icon="@tui.search" class="board-search__icon" />
+      <input
+        class="board-search__input"
+        type="search"
+        placeholder="Search tasks…"
+        [value]="searchQuery()"
+        (input)="searchQuery.set($any($event.target).value)"
+        aria-label="Search my tasks"
+      />
+    </div>
+    <div class="dashboard__sort-tabs" role="group" aria-label="Sort by">
+      @for (opt of sortOptions; track opt.value) {
+        <button
+          tuiButton type="button" size="xs"
+          [appearance]="sortBy() === opt.value ? 'primary' : 'flat'"
+          (click)="sortBy.set(opt.value)"
+        >{{ opt.label }}</button>
+      }
+    </div>
+  </div>
+
   @if (error()) {
     <div class="dashboard__error" role="alert">{{ error() }}</div>
   }

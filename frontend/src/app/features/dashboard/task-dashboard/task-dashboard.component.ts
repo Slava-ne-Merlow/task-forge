@@ -25,6 +25,18 @@ export class TaskDashboardComponent implements OnInit {
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
   protected readonly filterStatus = signal<TaskStatus | 'all'>('all');
+  protected readonly sortBy = signal<'deadline' | 'priority' | 'created'>('deadline');
+  protected readonly searchQuery = signal('');
+
+  protected readonly sortOptions = [
+    { value: 'deadline' as const, label: 'Deadline' },
+    { value: 'priority' as const, label: 'Priority' },
+    { value: 'created' as const, label: 'Created' },
+  ];
+
+  private readonly priorityOrder: Record<string, number> = {
+    critical: 0, high: 1, medium: 2, low: 3,
+  };
 
   protected readonly statuses = TASK_STATUSES;
 
@@ -42,12 +54,28 @@ export class TaskDashboardComponent implements OnInit {
   protected readonly filteredTasks = computed(() => {
     const all = this.tasks();
     const status = this.filterStatus();
-    const filtered = status === 'all' ? all : all.filter((t) => t.status === status);
+    const query = this.searchQuery().toLowerCase().trim();
+    const sort = this.sortBy();
+
+    let filtered = status === 'all' ? all : all.filter((t) => t.status === status);
+
+    if (query) {
+      filtered = filtered.filter(
+        (t) => t.title.toLowerCase().includes(query) || t.description?.toLowerCase().includes(query),
+      );
+    }
+
     return [...filtered].sort((a, b) => {
-      if (!a.deadline && !b.deadline) return 0;
-      if (!a.deadline) return 1;
-      if (!b.deadline) return -1;
-      return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+      if (sort === 'deadline') {
+        if (!a.deadline && !b.deadline) return 0;
+        if (!a.deadline) return 1;
+        if (!b.deadline) return -1;
+        return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+      }
+      if (sort === 'priority') {
+        return (this.priorityOrder[a.priority] ?? 9) - (this.priorityOrder[b.priority] ?? 9);
+      }
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
     });
   });
 

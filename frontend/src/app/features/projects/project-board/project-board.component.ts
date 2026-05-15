@@ -47,11 +47,20 @@ export class ProjectBoardComponent implements OnInit {
   protected readonly showCreateForm = signal(false);
   protected readonly editingTask = signal<Task | null>(null);
 
-  // Filter dropdowns
+  // Filter / search / sort
   protected readonly priorityFilterOpen = signal(false);
   protected readonly assigneeFilterOpen = signal(false);
+  protected readonly sortOpen = signal(false);
   protected readonly filterPriority = signal<TaskPriority | null>(null);
   protected readonly filterAssigneeId = signal<string | null>(null);
+  protected readonly searchQuery = signal('');
+  protected readonly sortBy = signal<'deadline' | 'priority' | 'created'>('deadline');
+
+  protected readonly sortOptions: { value: 'deadline' | 'priority' | 'created'; label: string }[] = [
+    { value: 'deadline', label: 'Deadline' },
+    { value: 'priority', label: 'Priority' },
+    { value: 'created', label: 'Created' },
+  ];
 
   // Create-form dropdowns
   protected readonly createPriorityOpen = signal(false);
@@ -91,15 +100,49 @@ export class ProjectBoardComponent implements OnInit {
     return false;
   }
 
-  protected readonly filteredTasksByStatus = computed(() =>
-    this.projectsStore.tasksByStatus().map((col) => ({
-      ...col,
-      tasks: col.tasks.filter((t) => {
+  private readonly priorityOrder: Record<string, number> = {
+    critical: 0, high: 1, medium: 2, low: 3,
+  };
+
+  protected readonly filteredTasksByStatus = computed(() => {
+    const query = this.searchQuery().toLowerCase().trim();
+    const sort = this.sortBy();
+
+    return this.projectsStore.tasksByStatus().map((col) => {
+      let tasks = col.tasks.filter((t) => {
         if (this.filterPriority() && t.priority !== this.filterPriority()) return false;
         if (this.filterAssigneeId() && t.assignee?.id !== this.filterAssigneeId()) return false;
+        if (query && !t.title.toLowerCase().includes(query) &&
+            !t.description?.toLowerCase().includes(query)) return false;
         return true;
-      }),
-    })),
+      });
+
+      tasks = [...tasks].sort((a, b) => {
+        if (sort === 'deadline') {
+          if (!a.deadline && !b.deadline) return 0;
+          if (!a.deadline) return 1;
+          if (!b.deadline) return -1;
+          return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
+        }
+        if (sort === 'priority') {
+          return (this.priorityOrder[a.priority] ?? 9) - (this.priorityOrder[b.priority] ?? 9);
+        }
+        // created
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      });
+
+      return { ...col, tasks };
+    });
+  });
+
+  protected clearFilters(): void {
+    this.filterPriority.set(null);
+    this.filterAssigneeId.set(null);
+    this.searchQuery.set('');
+  }
+
+  protected readonly hasActiveFilters = computed(
+    () => !!this.filterPriority() || !!this.filterAssigneeId() || !!this.searchQuery(),
   );
 
   protected readonly createForm = this.fb.nonNullable.group({
@@ -219,11 +262,6 @@ export class ProjectBoardComponent implements OnInit {
   protected assigneeLabel(id: string): string {
     if (!id) return 'Unassigned';
     return this.getMemberName(id) || 'Unassigned';
-  }
-
-  protected clearFilters(): void {
-    this.filterPriority.set(null);
-    this.filterAssigneeId.set(null);
   }
 
   protected goBack(): void {

@@ -12,6 +12,19 @@
     </div>
 
     <div class="board-page__header-actions">
+      <!-- Search -->
+      <div class="board-search">
+        <tui-icon icon="@tui.search" class="board-search__icon" />
+        <input
+          class="board-search__input"
+          type="search"
+          placeholder="Search tasks…"
+          [value]="searchQuery()"
+          (input)="searchQuery.set($any($event.target).value)"
+          aria-label="Search tasks"
+        />
+      </div>
+
       <!-- Priority filter -->
       <button
         tuiButton type="button" appearance="outline" size="s"
@@ -50,9 +63,31 @@
         </tui-data-list>
       </ng-template>
 
-      @if (filterPriority() || filterAssigneeId()) {
+      <!-- Sort -->
+      <button
+        tuiButton type="button" appearance="outline" size="s"
+        [tuiDropdown]="sortMenu"
+        [tuiDropdownOpen]="sortOpen()"
+        (tuiDropdownOpenChange)="sortOpen.set($event)"
+      >
+        <tui-icon icon="@tui.arrow-up-down" />
+        {{ sortOptions.find(s => s.value === sortBy())?.label ?? 'Sort' }}
+      </button>
+      <ng-template #sortMenu>
+        <tui-data-list>
+          @for (opt of sortOptions; track opt.value) {
+            <button tuiOption
+              [class.tui-option--active]="sortBy() === opt.value"
+              (click)="sortBy.set(opt.value); sortOpen.set(false)">
+              {{ opt.label }}
+            </button>
+          }
+        </tui-data-list>
+      </ng-template>
+
+      @if (hasActiveFilters()) {
         <button tuiButton type="button" appearance="flat" size="s" (click)="clearFilters()">
-          Clear filters
+          Clear all
         </button>
       }
 
