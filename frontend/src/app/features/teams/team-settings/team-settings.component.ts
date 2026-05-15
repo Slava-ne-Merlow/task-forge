@@ -12,8 +12,10 @@ import { Router } from '@angular/router';
 import { TuiButton, TuiDataList, TuiDropdown, TuiIcon } from '@taiga-ui/core';
 import { TuiBadge } from '@taiga-ui/kit';
 
+import { ApiService } from '../../../core/api/api.service';
 import { AuthStore } from '../../../core/auth/auth.store';
 import { TeamMember, TeamRole } from '../../../core/models/team.model';
+import { TeamMemberWorkload } from '../../../core/models/workload.model';
 import { TeamsStore } from '../teams.store';
 
 @Component({
@@ -30,10 +32,16 @@ export class TeamSettingsComponent implements OnInit {
   protected readonly authStore = inject(AuthStore);
   private readonly router = inject(Router);
   private readonly clipboard = inject(Clipboard);
+  private readonly api = inject(ApiService);
 
   protected readonly inviteLink = signal<string | null>(null);
   protected readonly linkCopied = signal(false);
   protected readonly openRoleDropdown = signal<string | null>(null);
+  protected readonly workload = signal<TeamMemberWorkload[]>([]);
+  protected readonly workloadLoading = signal(false);
+  protected readonly activeTab = signal<'members' | 'workload'>('members');
+
+  protected readonly Math = Math;
 
   protected readonly currentUserRole = computed(() => {
     const userId = this.authStore.user()?.id;
@@ -50,6 +58,19 @@ export class TeamSettingsComponent implements OnInit {
   ngOnInit(): void {
     this.teamsStore.loadTeam(this.teamId());
     this.teamsStore.loadMembers(this.teamId());
+  }
+
+  protected loadWorkload(): void {
+    this.activeTab.set('workload');
+    if (this.workload().length > 0) return;
+    this.workloadLoading.set(true);
+    this.api.getTeamWorkload(this.teamId()).subscribe({
+      next: (data) => {
+        this.workload.set(data);
+        this.workloadLoading.set(false);
+      },
+      error: () => this.workloadLoading.set(false),
+    });
   }
 
   protected generateInviteLink(): void {

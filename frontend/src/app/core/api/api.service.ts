@@ -7,6 +7,7 @@ import { environment } from '../../../environments/environment';
 import { Invitation } from '../models/invitation.model';
 import { Project } from '../models/project.model';
 import { Task, TaskDetail, TaskLog, TaskPriority, TaskStatus } from '../models/task.model';
+import { TeamMemberWorkload } from '../models/workload.model';
 import { Team, TeamMember, TeamRole } from '../models/team.model';
 import { User } from '../models/user.model';
 
@@ -158,6 +159,10 @@ export class ApiService {
 
   getMyProjects(): Observable<Project[]> {
     return this.http.get<Project[]>(`${API}/me/projects`);
+  }
+
+  getTeamWorkload(teamId: string): Observable<TeamMemberWorkload[]> {
+    return this.http.get<TeamMemberWorkload[]>(`${API}/teams/${teamId}/workload`);
   }
 
   getTaskDetail(taskId: string): Observable<TaskDetail> {

@@ -422,3 +422,43 @@ def my_tasks(
 ):
     tasks = db.query(Task).options(joinedload(Task.assignee), joinedload(Task.project)).filter(Task.assignee_id == current_user.id).all()
     return [_task_out(t) for t in tasks]
+
+
+@router.get("/teams/{team_id}/workload")
+def team_workload(
+    team_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Workload report: per-member task counts and logged/estimated hours."""
+    member = _require_team_member(db, team_id, current_user.id)
+    if member.role not in (TeamRole.OWNER, TeamRole.LEAD):
+        raise HTTPException(status_code=403, detail="Only Owner or Lead can view workload")
+
+    members = db.query(TeamMember).filter(TeamMember.team_id == team_id).all()
+    project_ids = [p.id for p in db.query(Project).filter(Project.team_id == team_id).all()]
+
+    result = []
+    for m in members:
+        tasks = (
+            db.query(Task)
+            .filter(Task.project_id.in_(project_ids), Task.assignee_id == m.user_id)
+            .all()
+        ) if project_ids else []
+
+        by_status: dict[str, int] = {"todo": 0, "in_progress": 0, "review": 0, "done": 0}
+        for t in tasks:
+            by_status[t.status] = by_status.get(t.status, 0) + 1
+
+        result.append({
+            "userId": m.user_id,
+            "name": m.user.name,
+            "email": m.user.email,
+            "role": m.role,
+            "tasksByStatus": by_status,
+            "totalTasks": len(tasks),
+            "loggedHours": round(sum(t.logged_hours or 0 for t in tasks), 1),
+            "estimatedHours": round(sum(t.estimated_hours or 0 for t in tasks), 1),
+        })
+
+    return result

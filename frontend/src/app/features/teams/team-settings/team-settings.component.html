@@ -66,7 +66,36 @@
     </section>
   }
 
+  <!-- Tab switcher (Members / Workload) -->
+  @if (isOwner() || canInvite()) {
+    <div class="settings-tabs" role="tablist">
+      <button
+        tuiButton
+        type="button"
+        size="s"
+        [appearance]="activeTab() === 'members' ? 'primary' : 'flat'"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'members'"
+        (click)="activeTab.set('members')"
+      >
+        Members
+      </button>
+      <button
+        tuiButton
+        type="button"
+        size="s"
+        [appearance]="activeTab() === 'workload' ? 'primary' : 'flat'"
+        role="tab"
+        [attr.aria-selected]="activeTab() === 'workload'"
+        (click)="loadWorkload()"
+      >
+        Workload
+      </button>
+    </div>
+  }
+
   <!-- Members Section -->
+  @if (activeTab() === 'members') {
   <section class="settings-section" aria-labelledby="members-heading">
     <h2 id="members-heading" class="settings-section__title">
       Members
@@ -156,4 +185,77 @@
       </ul>
     }
   </section>
+  } <!-- end members tab -->
+
+  <!-- Workload Section -->
+  @if (activeTab() === 'workload') {
+  <section class="settings-section" aria-labelledby="workload-heading">
+    <h2 id="workload-heading" class="settings-section__title">Team Workload</h2>
+    <p class="settings-section__desc">Task distribution and time tracking across team members.</p>
+
+    @if (workloadLoading()) {
+      <div class="settings-page__loader"><span class="loader-spinner"></span></div>
+    } @else {
+      <div class="workload-table" role="table" aria-label="Team workload">
+        <div class="workload-table__head" role="row">
+          <span role="columnheader">Member</span>
+          <span role="columnheader">Todo</span>
+          <span role="columnheader">In Progress</span>
+          <span role="columnheader">Review</span>
+          <span role="columnheader">Done</span>
+          <span role="columnheader">Logged / Est.</span>
+        </div>
+        @for (row of workload(); track row.userId) {
+          <div class="workload-table__row" role="row">
+            <div class="workload-table__member" role="cell">
+              <span class="member-card__avatar" aria-hidden="true">
+                {{ row.name.charAt(0).toUpperCase() }}
+              </span>
+              <div>
+                <div class="workload-table__name">{{ row.name }}</div>
+                <div class="workload-table__role">
+                  <span
+                    tuiBadge
+                    [appearance]="row.role === 'owner' ? 'primary' : row.role === 'lead' ? 'info' : 'neutral'"
+                    size="s"
+                  >{{ row.role }}</span>
+                </div>
+              </div>
+            </div>
+            <span class="workload-table__num" role="cell">{{ row.tasksByStatus.todo }}</span>
+            <span class="workload-table__num workload-table__num--active" role="cell">
+              {{ row.tasksByStatus.in_progress }}
+            </span>
+            <span class="workload-table__num workload-table__num--review" role="cell">
+              {{ row.tasksByStatus.review }}
+            </span>
+            <span class="workload-table__num workload-table__num--done" role="cell">
+              {{ row.tasksByStatus.done }}
+            </span>
+            <div class="workload-table__hours" role="cell">
+              <span
+                [class.workload-table__hours--over]="row.estimatedHours > 0 && row.loggedHours > row.estimatedHours"
+              >
+                {{ row.loggedHours }}h
+              </span>
+              @if (row.estimatedHours > 0) {
+                <span class="workload-table__hours-est"> / {{ row.estimatedHours }}h</span>
+              }
+              @if (row.estimatedHours > 0) {
+                <div class="workload-bar">
+                  <div
+                    class="workload-bar__fill"
+                    [style.width.%]="Math.min(100, (row.loggedHours / row.estimatedHours) * 100)"
+                    [class.workload-bar__fill--over]="row.loggedHours > row.estimatedHours"
+                  ></div>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </section>
+  } <!-- end workload tab -->
+
 </div>
