@@ -6,7 +6,9 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  transition: box-shadow 0.15s, border-color 0.15s;
+  transition:
+    box-shadow 0.15s,
+    border-color 0.15s;
 }
 
 .task-card:hover {

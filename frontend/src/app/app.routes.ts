@@ -32,7 +32,8 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () =>
       import('./shared/components/shell/shell.component').then((m) => m.ShellComponent),
-    loadChildren: () => import('./features/dashboard/dashboard.routes').then((m) => m.dashboardRoutes),
+    loadChildren: () =>
+      import('./features/dashboard/dashboard.routes').then((m) => m.dashboardRoutes),
   },
   {
     path: '**',

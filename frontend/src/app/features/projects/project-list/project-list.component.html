@@ -34,12 +34,25 @@
 
       <tui-textfield>
         <label tuiLabel for="proj-desc">Description (optional)</label>
-        <input id="proj-desc" tuiInput formControlName="description" placeholder="What is this project about?" />
+        <input
+          id="proj-desc"
+          tuiInput
+          formControlName="description"
+          placeholder="What is this project about?"
+        />
       </tui-textfield>
 
       <div class="create-card__actions">
-        <button tuiButton type="button" appearance="flat" size="m" (click)="cancelCreate()">Cancel</button>
-        <button tuiButton type="submit" appearance="primary" size="m" [loading]="projectsStore.loading()">
+        <button tuiButton type="button" appearance="flat" size="m" (click)="cancelCreate()">
+          Cancel
+        </button>
+        <button
+          tuiButton
+          type="submit"
+          appearance="primary"
+          size="m"
+          [loading]="projectsStore.loading()"
+        >
           Create
         </button>
       </div>

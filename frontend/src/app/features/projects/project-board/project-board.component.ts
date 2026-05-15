@@ -9,12 +9,26 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TuiButton, TuiDataList, TuiDropdown, TuiError, TuiIcon, TuiInput, TuiTextfield } from '@taiga-ui/core';
+import {
+  TuiButton,
+  TuiDataList,
+  TuiDropdown,
+  TuiError,
+  TuiIcon,
+  TuiInput,
+  TuiTextfield,
+} from '@taiga-ui/core';
 import { TuiBadge, TuiButtonLoading } from '@taiga-ui/kit';
 
 import { ApiService } from '../../../core/api/api.service';
 import { AuthStore } from '../../../core/auth/auth.store';
-import { Task, TaskPriority, TaskStatus, TASK_PRIORITIES, TASK_STATUSES } from '../../../core/models/task.model';
+import {
+  Task,
+  TaskPriority,
+  TaskStatus,
+  TASK_PRIORITIES,
+  TASK_STATUSES,
+} from '../../../core/models/task.model';
 import { TeamMember } from '../../../core/models/team.model';
 import { TaskCardComponent } from '../../../shared/components/task-card/task-card.component';
 import { TeamsStore } from '../../teams/teams.store';
@@ -27,9 +41,15 @@ import { ProjectsStore } from '../projects.store';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     ReactiveFormsModule,
-    TuiButton, TuiButtonLoading, TuiIcon, TuiBadge,
-    TuiTextfield, TuiInput, TuiError,
-    TuiDropdown, TuiDataList,
+    TuiButton,
+    TuiButtonLoading,
+    TuiIcon,
+    TuiBadge,
+    TuiTextfield,
+    TuiInput,
+    TuiError,
+    TuiDropdown,
+    TuiDataList,
     TaskCardComponent,
   ],
 })
@@ -56,11 +76,12 @@ export class ProjectBoardComponent implements OnInit {
   protected readonly searchQuery = signal('');
   protected readonly sortBy = signal<'deadline' | 'priority' | 'created'>('deadline');
 
-  protected readonly sortOptions: { value: 'deadline' | 'priority' | 'created'; label: string }[] = [
-    { value: 'deadline', label: 'Deadline' },
-    { value: 'priority', label: 'Priority' },
-    { value: 'created', label: 'Created' },
-  ];
+  protected readonly sortOptions: { value: 'deadline' | 'priority' | 'created'; label: string }[] =
+    [
+      { value: 'deadline', label: 'Deadline' },
+      { value: 'priority', label: 'Priority' },
+      { value: 'created', label: 'Created' },
+    ];
 
   // Create-form dropdowns
   protected readonly createPriorityOpen = signal(false);
@@ -92,8 +113,8 @@ export class ProjectBoardComponent implements OnInit {
 
     // todo → in_progress: only the assignee (or unassigned tasks can be taken by anyone)
     if (s === 'todo') {
-      if (isUnassigned) return true;  // anyone can claim+start
-      return isAssignee;             // assigned → only the assignee
+      if (isUnassigned) return true; // anyone can claim+start
+      return isAssignee; // assigned → only the assignee
     }
     // in_progress → review: only assignee
     if (s === 'in_progress') return isAssignee;
@@ -101,7 +122,10 @@ export class ProjectBoardComponent implements OnInit {
   }
 
   private readonly priorityOrder: Record<string, number> = {
-    critical: 0, high: 1, medium: 2, low: 3,
+    critical: 0,
+    high: 1,
+    medium: 2,
+    low: 3,
   };
 
   protected readonly filteredTasksByStatus = computed(() => {
@@ -112,8 +136,12 @@ export class ProjectBoardComponent implements OnInit {
       let tasks = col.tasks.filter((t) => {
         if (this.filterPriority() && t.priority !== this.filterPriority()) return false;
         if (this.filterAssigneeId() && t.assignee?.id !== this.filterAssigneeId()) return false;
-        if (query && !t.title.toLowerCase().includes(query) &&
-            !t.description?.toLowerCase().includes(query)) return false;
+        if (
+          query &&
+          !t.title.toLowerCase().includes(query) &&
+          !t.description?.toLowerCase().includes(query)
+        )
+          return false;
         return true;
       });
 
@@ -189,7 +217,10 @@ export class ProjectBoardComponent implements OnInit {
   }
 
   protected submitCreate(): void {
-    if (this.createForm.invalid) { this.createForm.markAllAsTouched(); return; }
+    if (this.createForm.invalid) {
+      this.createForm.markAllAsTouched();
+      return;
+    }
     const v = this.createForm.getRawValue();
     this.projectsStore.createTask({
       projectId: this.projectId(),
@@ -222,7 +253,10 @@ export class ProjectBoardComponent implements OnInit {
 
   protected submitEdit(): void {
     const task = this.editingTask();
-    if (!task || this.editForm.invalid) { this.editForm.markAllAsTouched(); return; }
+    if (!task || this.editForm.invalid) {
+      this.editForm.markAllAsTouched();
+      return;
+    }
     const v = this.editForm.getRawValue();
     this.projectsStore.updateTask({
       taskId: task.id,

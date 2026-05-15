@@ -25,9 +25,15 @@ import { ProjectsStore } from '../projects.store';
   styleUrl: './task-detail.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    DatePipe, ReactiveFormsModule,
-    TuiButton, TuiButtonLoading, TuiIcon, TuiBadge,
-    TuiTextfield, TuiInput, TuiError,
+    DatePipe,
+    ReactiveFormsModule,
+    TuiButton,
+    TuiButtonLoading,
+    TuiIcon,
+    TuiBadge,
+    TuiTextfield,
+    TuiInput,
+    TuiError,
   ],
 })
 export class TaskDetailComponent implements OnInit {
@@ -67,8 +73,8 @@ export class TaskDetailComponent implements OnInit {
     () => this.task()?.assignee?.id === this.authStore.user()?.id,
   );
 
-  protected readonly canManage = computed(() =>
-    this.currentUserRole() === 'owner' || this.currentUserRole() === 'lead',
+  protected readonly canManage = computed(
+    () => this.currentUserRole() === 'owner' || this.currentUserRole() === 'lead',
   );
 
   protected readonly canClaim = computed(
@@ -117,7 +123,10 @@ export class TaskDetailComponent implements OnInit {
   });
 
   protected readonly priorityAppearance: Record<string, string> = {
-    low: 'neutral', medium: 'info', high: 'warning', critical: 'negative',
+    low: 'neutral',
+    medium: 'info',
+    high: 'warning',
+    critical: 'negative',
   };
 
   protected readonly Math = Math;
@@ -139,8 +148,14 @@ export class TaskDetailComponent implements OnInit {
   private loadTask(): void {
     this.loading.set(true);
     this.api.getTaskDetail(this.taskId()).subscribe({
-      next: (t) => { this.task.set(t); this.loading.set(false); },
-      error: (err) => { this.error.set(err.error?.detail ?? 'Failed to load task'); this.loading.set(false); },
+      next: (t) => {
+        this.task.set(t);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set(err.error?.detail ?? 'Failed to load task');
+        this.loading.set(false);
+      },
     });
   }
 
@@ -150,12 +165,15 @@ export class TaskDetailComponent implements OnInit {
     this.submitting.set(true);
     this.api.updateTask(this.taskId(), { status: next }).subscribe({
       next: (updated) => {
-        this.task.update((t) => t ? { ...t, ...updated, logs: t.logs } : null);
+        this.task.update((t) => (t ? { ...t, ...updated, logs: t.logs } : null));
         this.submitting.set(false);
         this.projectsStore.updateTaskStatus({ taskId: this.taskId(), status: next });
         this.loadTask(); // refresh logs
       },
-      error: (err) => { this.error.set(err.error?.detail); this.submitting.set(false); },
+      error: (err) => {
+        this.error.set(err.error?.detail);
+        this.submitting.set(false);
+      },
     });
   }
 
@@ -163,27 +181,38 @@ export class TaskDetailComponent implements OnInit {
     this.submitting.set(true);
     this.api.claimTask(this.taskId()).subscribe({
       next: (updated) => {
-        this.task.update((t) => t ? { ...t, ...updated, logs: t.logs } : null);
+        this.task.update((t) => (t ? { ...t, ...updated, logs: t.logs } : null));
         this.submitting.set(false);
         this.projectsStore.claimTask(this.taskId());
         this.loadTask();
       },
-      error: (err) => { this.error.set(err.error?.detail); this.submitting.set(false); },
+      error: (err) => {
+        this.error.set(err.error?.detail);
+        this.submitting.set(false);
+      },
     });
   }
 
   protected submitLog(): void {
-    if (this.logForm.invalid) { this.logForm.markAllAsTouched(); return; }
+    if (this.logForm.invalid) {
+      this.logForm.markAllAsTouched();
+      return;
+    }
     const { hours, description } = this.logForm.getRawValue();
     this.submitting.set(true);
     this.api.addTaskLog(this.taskId(), hours, description).subscribe({
       next: (log) => {
-        this.task.update((t) => t ? { ...t, logs: [...t.logs, log], loggedHours: t.loggedHours + (hours ?? 0) } : null);
+        this.task.update((t) =>
+          t ? { ...t, logs: [...t.logs, log], loggedHours: t.loggedHours + (hours ?? 0) } : null,
+        );
         this.logForm.reset();
         this.showLogForm.set(false);
         this.submitting.set(false);
       },
-      error: (err) => { this.error.set(err.error?.detail); this.submitting.set(false); },
+      error: (err) => {
+        this.error.set(err.error?.detail);
+        this.submitting.set(false);
+      },
     });
   }
 
@@ -191,29 +220,38 @@ export class TaskDetailComponent implements OnInit {
     this.submitting.set(true);
     this.api.approveTask(this.taskId()).subscribe({
       next: (updated) => {
-        this.task.update((t) => t ? { ...t, ...updated, logs: t.logs } : null);
+        this.task.update((t) => (t ? { ...t, ...updated, logs: t.logs } : null));
         this.projectsStore.approveTask(this.taskId());
         this.submitting.set(false);
         this.loadTask();
       },
-      error: (err) => { this.error.set(err.error?.detail); this.submitting.set(false); },
+      error: (err) => {
+        this.error.set(err.error?.detail);
+        this.submitting.set(false);
+      },
     });
   }
 
   protected submitReject(): void {
-    if (this.rejectForm.invalid) { this.rejectForm.markAllAsTouched(); return; }
+    if (this.rejectForm.invalid) {
+      this.rejectForm.markAllAsTouched();
+      return;
+    }
     const { comment } = this.rejectForm.getRawValue();
     this.submitting.set(true);
     this.api.rejectTask(this.taskId(), comment).subscribe({
       next: (updated) => {
-        this.task.update((t) => t ? { ...t, ...updated, logs: t.logs } : null);
+        this.task.update((t) => (t ? { ...t, ...updated, logs: t.logs } : null));
         this.projectsStore.rejectTask({ taskId: this.taskId(), comment });
         this.rejectForm.reset();
         this.showRejectForm.set(false);
         this.submitting.set(false);
         this.loadTask();
       },
-      error: (err) => { this.error.set(err.error?.detail); this.submitting.set(false); },
+      error: (err) => {
+        this.error.set(err.error?.detail);
+        this.submitting.set(false);
+      },
     });
   }
 

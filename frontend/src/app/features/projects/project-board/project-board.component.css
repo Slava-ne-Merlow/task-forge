@@ -169,17 +169,19 @@
   outline: 1px solid var(--tui-border-normal);
   outline-offset: -1px;
   border-radius: var(--tui-radius-l);
-  box-shadow: 0 0.125rem 0.1875rem rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.125rem 0.1875rem rgb(0, 0, 0, 0.1);
   font: inherit;
   font-size: 0.9375rem;
   color: var(--tui-text-primary);
   cursor: pointer;
-  transition: outline-color 0.2s, box-shadow 0.2s;
+  transition:
+    outline-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .form-select-btn:hover {
   outline-color: var(--tui-border-hover, var(--tui-border-focus));
-  box-shadow: 0 0.125rem 0.3125rem rgba(0, 0, 0, 0.16);
+  box-shadow: 0 0.125rem 0.3125rem rgb(0, 0, 0, 0.16);
 }
 
 .form-select-btn:focus-visible {
@@ -211,7 +213,7 @@
 .edit-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgb(0, 0, 0, 0.4);
   z-index: 200;
   display: flex;
   align-items: flex-start;
@@ -261,7 +263,10 @@
   flex-wrap: wrap;
 }
 
-.edit-drawer__row tui-textfield { flex: 1; min-width: 120px; }
+.edit-drawer__row tui-textfield {
+  flex: 1;
+  min-width: 120px;
+}
 
 .edit-drawer__footer {
   padding: 1rem 1.5rem;
@@ -332,13 +337,23 @@
   animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
-
-@media (max-width: 900px) {
-  .kanban { grid-template-columns: repeat(2, 1fr); }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-@media (max-width: 540px) {
-  .kanban { grid-template-columns: 1fr; }
-  .board-page { padding: 1rem; }
+@media (width <= 900px) {
+  .kanban {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (width <= 540px) {
+  .kanban {
+    grid-template-columns: 1fr;
+  }
+  .board-page {
+    padding: 1rem;
+  }
 }

@@ -1,59 +1,168 @@
-# TaskForge
+# TaskForge — Система управления задачами для команды
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.11.
+Веб-приложение для распределения задач внутри команды с отслеживанием времени и прогресса.
 
-## Development server
+**Деплой:** http://31.177.82.157
 
-To start a local development server, run:
+---
+
+## Стек
+
+| Слой | Технология |
+|---|---|
+| Frontend | Angular 21, TaigaUI 5, NgRx Signal Store |
+| Backend | Python 3.14, FastAPI, SQLAlchemy, SQLite |
+| Auth | JWT (Bearer), localStorage |
+| CI/CD | GitHub Actions → VPS (Ubuntu 26.04), nginx |
+
+---
+
+## Функциональность
+
+- **Авторизация** — регистрация, вход, JWT-сессия, инвайты по ссылке
+- **Команды** — создание, приглашение участников, управление ролями (Owner / Lead / Developer)
+- **Проекты** — Owner создаёт проекты в рамках команды
+- **Канбан-доска** — 4 статуса: Todo → In Progress → Review → Done
+- **Задачи** — исполнитель, дедлайн, приоритет, оценка часов, лог работы
+- **Доска** — поиск по названию, фильтр по приоритету и исполнителю, сортировка
+- **История задачи** — все события: claim, work log, status change, approve/reject
+- **Мои задачи** — личный дашборд со статистикой, поиском и сортировкой
+- **Мои проекты** — все проекты пользователя одним списком
+
+### Роли и права
+
+| Действие | Owner | Lead | Developer |
+|---|:---:|:---:|:---:|
+| Создание проекта | ✅ | ❌ | ❌ |
+| Приглашение участников | ✅ | ✅ | ❌ |
+| Создание задач | ✅ | ✅ | ❌ |
+| Назначение исполнителя | ✅ | ✅ | ❌ |
+| Взять задачу на себя | ✅ | ✅ | ✅ |
+| Изменение статуса своей задачи | ✅ | ✅ | ✅ |
+| Лог работы | ✅ | ✅ | ✅ |
+| Апрув/отклонение Review | ✅ | ✅ | ❌ |
+| Управление ролями | ✅ | ❌ | ❌ |
+
+---
+
+## Запуск локально
+
+### Требования
+- Python 3.11+
+- Node.js 22+
+- npm 10+
+
+### Backend
 
 ```bash
-ng serve
+cd backend
+python3 -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn main:app --reload       # http://localhost:8000
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Тестовые данные:
+```bash
+python3 prod_seed.py
+```
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Frontend
 
 ```bash
-ng generate component component-name
+cd frontend
+npm install
+ng serve                        # http://localhost:4200
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Тестовые аккаунты (пароль у всех: `password123`)
 
-```bash
-ng generate --help
+| Email | Роль |
+|---|---|
+| alice@taskforge.dev | Owner — Frontend Squad |
+| bob@taskforge.dev | Lead — Frontend Squad, Dev — Backend Core |
+| charlie@taskforge.dev | Developer — Frontend Squad |
+| diana@taskforge.dev | Developer — Frontend Squad |
+| eve@taskforge.dev | Owner — Backend Core |
+| frank@taskforge.dev | Lead — Backend Core |
+| grace@taskforge.dev | Developer — Backend Core |
+
+---
+
+## Структура проекта
+
+```
+TaskForge/
+├── backend/               # FastAPI-приложение
+│   ├── main.py
+│   ├── models.py          # SQLAlchemy модели
+│   ├── schemas.py         # Pydantic схемы (camelCase)
+│   ├── auth_utils.py      # JWT, bcrypt
+│   ├── dependencies.py    # get_current_user
+│   └── routers/
+│       ├── auth.py
+│       ├── teams.py
+│       ├── invitations.py
+│       └── projects.py    # проекты + задачи + логи
+│
+└── frontend/              # Angular 21-приложение
+    └── src/app/
+        ├── core/
+        │   ├── auth/      # AuthStore, guard, interceptor, TokenService
+        │   ├── api/       # ApiService
+        │   └── models/    # интерфейсы TypeScript
+        ├── features/
+        │   ├── auth/      # login, register, invite-accept
+        │   ├── teams/     # team-list, team-settings, TeamsStore
+        │   ├── projects/  # project-list, project-board, task-detail, ProjectsStore
+        │   ├── dashboard/ # task-dashboard (мои задачи)
+        │   └── my-projects/
+        └── shared/
+            └── components/
+                ├── shell/      # навигация, хедер
+                └── task-card/  # переиспользуемая карточка задачи
 ```
 
-## Building
+---
 
-To build the project run:
+## API
 
-```bash
-ng build
+Документация: http://31.177.82.157/api/docs
+
+Основные эндпоинты:
+
+```
+POST /auth/register          Регистрация
+POST /auth/login             Вход
+GET  /auth/me                Текущий пользователь
+
+GET  /teams                  Список команд
+POST /teams                  Создать команду
+GET  /teams/{id}/members     Участники команды
+POST /teams/{id}/invitations Создать инвайт
+
+GET  /teams/{id}/projects    Проекты команды
+POST /teams/{id}/projects    Создать проект
+GET  /projects/{id}/tasks    Задачи проекта
+POST /projects/{id}/tasks    Создать задачу
+
+PATCH /tasks/{id}            Обновить задачу (статус, поля)
+POST  /tasks/{id}/claim      Взять задачу на себя
+POST  /tasks/{id}/logs       Залогировать работу
+POST  /tasks/{id}/approve    Одобрить (Lead/Owner)
+POST  /tasks/{id}/reject     Отклонить с комментарием
+
+GET /me/tasks                Мои задачи
+GET /me/projects             Все мои проекты
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+## CI/CD
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+При пуше в `main`:
+1. Сборка Angular (production build)
+2. Деплой backend через rsync (без БД и кэша)
+3. Деплой frontend (статика в nginx)
+4. Перезапуск systemd-сервиса uvicorn
+5. Health-check `GET /api/health`

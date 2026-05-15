@@ -11,7 +11,15 @@ import { AuthStore } from '../../../core/auth/auth.store';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, TuiTextfield, TuiInput, TuiButton, TuiButtonLoading, TuiError],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    TuiTextfield,
+    TuiInput,
+    TuiButton,
+    TuiButtonLoading,
+    TuiError,
+  ],
 })
 export class LoginComponent {
   protected readonly authStore = inject(AuthStore);

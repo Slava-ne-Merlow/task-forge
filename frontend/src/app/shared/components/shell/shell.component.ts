@@ -9,7 +9,15 @@ import { AuthStore } from '../../../core/auth/auth.store';
   templateUrl: './shell.component.html',
   styleUrl: './shell.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, TuiButton, TuiIcon, TuiDropdown, TuiDataList],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    TuiButton,
+    TuiIcon,
+    TuiDropdown,
+    TuiDataList,
+  ],
 })
 export class ShellComponent {
   protected readonly authStore = inject(AuthStore);

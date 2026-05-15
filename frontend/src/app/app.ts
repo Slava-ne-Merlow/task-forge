@@ -11,7 +11,7 @@ import { AuthStore } from './core/auth/auth.store';
   styleUrl: './app.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class App implements OnInit {
+export class AppComponent implements OnInit {
   private readonly authStore = inject(AuthStore);
 
   ngOnInit(): void {

@@ -6,16 +6,26 @@
       </a>
 
       <div class="shell__nav-links">
-        <a routerLink="/teams" routerLinkActive="shell__nav-link--active"
-          [routerLinkActiveOptions]="{ exact: true }" class="shell__nav-link">
+        <a
+          routerLink="/teams"
+          routerLinkActive="shell__nav-link--active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="shell__nav-link"
+        >
           Teams
         </a>
-        <a routerLink="/projects" routerLinkActive="shell__nav-link--active"
-          class="shell__nav-link">
+        <a
+          routerLink="/projects"
+          routerLinkActive="shell__nav-link--active"
+          class="shell__nav-link"
+        >
           Projects
         </a>
-        <a routerLink="/dashboard" routerLinkActive="shell__nav-link--active"
-          class="shell__nav-link">
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="shell__nav-link--active"
+          class="shell__nav-link"
+        >
           My Tasks
         </a>
       </div>
@@ -42,9 +52,7 @@
         <ng-template #userMenu>
           <tui-data-list role="menu" aria-label="User options">
             <p class="shell__menu-email">{{ user.email }}</p>
-            <button tuiOption type="button" role="menuitem" (click)="logout()">
-              Sign out
-            </button>
+            <button tuiOption type="button" role="menuitem" (click)="logout()">Sign out</button>
           </tui-data-list>
         </ng-template>
       }

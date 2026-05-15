@@ -31,7 +31,9 @@
   <!-- Status filter tabs -->
   <div class="filter-tabs" role="tablist" aria-label="Filter by status">
     <button
-      tuiButton type="button" size="s"
+      tuiButton
+      type="button"
+      size="s"
       [appearance]="filterStatus() === 'all' ? 'primary' : 'outline'"
       (click)="filterStatus.set('all')"
       role="tab"
@@ -41,7 +43,9 @@
     </button>
     @for (s of statuses; track s.value) {
       <button
-        tuiButton type="button" size="s"
+        tuiButton
+        type="button"
+        size="s"
         [appearance]="filterStatus() === s.value ? 'primary' : 'outline'"
         (click)="filterStatus.set(s.value)"
         role="tab"
@@ -68,10 +72,14 @@
     <div class="dashboard__sort-tabs" role="group" aria-label="Sort by">
       @for (opt of sortOptions; track opt.value) {
         <button
-          tuiButton type="button" size="xs"
+          tuiButton
+          type="button"
+          size="xs"
           [appearance]="sortBy() === opt.value ? 'primary' : 'flat'"
           (click)="sortBy.set(opt.value)"
-        >{{ opt.label }}</button>
+        >
+          {{ opt.label }}
+        </button>
       }
     </div>
   </div>

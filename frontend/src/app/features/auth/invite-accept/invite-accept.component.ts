@@ -23,7 +23,15 @@ type PageState = 'loading' | 'loaded' | 'error' | 'used';
   templateUrl: './invite-accept.component.html',
   styleUrl: './invite-accept.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, TuiTextfield, TuiInput, TuiButton, TuiButtonLoading, TuiError],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    TuiTextfield,
+    TuiInput,
+    TuiButton,
+    TuiButtonLoading,
+    TuiError,
+  ],
 })
 export class InviteAcceptComponent implements OnInit {
   readonly token = input.required<string>();

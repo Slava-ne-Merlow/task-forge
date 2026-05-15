@@ -12,7 +12,16 @@ import { TeamsStore } from '../teams.store';
   templateUrl: './team-list.component.html',
   styleUrl: './team-list.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, TuiButton, TuiButtonLoading, TuiTextfield, TuiInput, TuiError, TuiBadge, TuiIcon],
+  imports: [
+    ReactiveFormsModule,
+    TuiButton,
+    TuiButtonLoading,
+    TuiTextfield,
+    TuiInput,
+    TuiError,
+    TuiBadge,
+    TuiIcon,
+  ],
 })
 export class TeamListComponent implements OnInit {
   protected readonly teamsStore = inject(TeamsStore);

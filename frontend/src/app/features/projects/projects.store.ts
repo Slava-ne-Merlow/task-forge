@@ -47,14 +47,23 @@ export const ProjectsStore = signalStore(
           api.getProjects(teamId).pipe(
             tap({
               next: (projects) => patchState(store, { projects, loading: false }),
-              error: (err) => patchState(store, { error: err.error?.detail ?? 'Failed to load projects', loading: false }),
+              error: (err) =>
+                patchState(store, {
+                  error: err.error?.detail ?? 'Failed to load projects',
+                  loading: false,
+                }),
             }),
           ),
         ),
       ),
     ),
 
-    createProject: rxMethod<{ teamId: string; name: string; description?: string; onSuccess?: (p: Project) => void }>(
+    createProject: rxMethod<{
+      teamId: string;
+      name: string;
+      description?: string;
+      onSuccess?: (p: Project) => void;
+    }>(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap(({ teamId, name, description, onSuccess }) =>
@@ -64,7 +73,11 @@ export const ProjectsStore = signalStore(
                 patchState(store, { projects: [...store.projects(), project], loading: false });
                 onSuccess?.(project);
               },
-              error: (err) => patchState(store, { error: err.error?.detail ?? 'Failed to create project', loading: false }),
+              error: (err) =>
+                patchState(store, {
+                  error: err.error?.detail ?? 'Failed to create project',
+                  loading: false,
+                }),
             }),
           ),
         ),
@@ -78,7 +91,11 @@ export const ProjectsStore = signalStore(
           api.getTasks(projectId).pipe(
             tap({
               next: (tasks) => patchState(store, { tasks, tasksLoading: false }),
-              error: (err) => patchState(store, { error: err.error?.detail ?? 'Failed to load tasks', tasksLoading: false }),
+              error: (err) =>
+                patchState(store, {
+                  error: err.error?.detail ?? 'Failed to load tasks',
+                  tasksLoading: false,
+                }),
             }),
           ),
         ),
@@ -103,7 +120,8 @@ export const ProjectsStore = signalStore(
                 patchState(store, { tasks: [...store.tasks(), task] });
                 onSuccess?.();
               },
-              error: (err) => patchState(store, { error: err.error?.detail ?? 'Failed to create task' }),
+              error: (err) =>
+                patchState(store, { error: err.error?.detail ?? 'Failed to create task' }),
             }),
           ),
         ),
@@ -119,14 +137,19 @@ export const ProjectsStore = signalStore(
                 const tasks = store.tasks().map((t) => (t.id === taskId ? updated : t));
                 patchState(store, { tasks });
               },
-              error: (err) => patchState(store, { error: err.error?.detail ?? 'Failed to update task' }),
+              error: (err) =>
+                patchState(store, { error: err.error?.detail ?? 'Failed to update task' }),
             }),
           ),
         ),
       ),
     ),
 
-    updateTask: rxMethod<{ taskId: string; changes: Parameters<ApiService['updateTask']>[1]; onSuccess?: () => void }>(
+    updateTask: rxMethod<{
+      taskId: string;
+      changes: Parameters<ApiService['updateTask']>[1];
+      onSuccess?: () => void;
+    }>(
       pipe(
         switchMap(({ taskId, changes, onSuccess }) =>
           api.updateTask(taskId, changes).pipe(
@@ -136,7 +159,8 @@ export const ProjectsStore = signalStore(
                 patchState(store, { tasks });
                 onSuccess?.();
               },
-              error: (err) => patchState(store, { error: err.error?.detail ?? 'Failed to update task' }),
+              error: (err) =>
+                patchState(store, { error: err.error?.detail ?? 'Failed to update task' }),
             }),
           ),
         ),
@@ -148,8 +172,10 @@ export const ProjectsStore = signalStore(
         switchMap((taskId) =>
           api.deleteTask(taskId).pipe(
             tap({
-              next: () => patchState(store, { tasks: store.tasks().filter((t) => t.id !== taskId) }),
-              error: (err) => patchState(store, { error: err.error?.detail ?? 'Failed to delete task' }),
+              next: () =>
+                patchState(store, { tasks: store.tasks().filter((t) => t.id !== taskId) }),
+              error: (err) =>
+                patchState(store, { error: err.error?.detail ?? 'Failed to delete task' }),
             }),
           ),
         ),
@@ -173,7 +199,8 @@ export const ProjectsStore = signalStore(
                 const tasks = store.tasks().map((t) => (t.id === taskId ? updated : t));
                 patchState(store, { tasks });
               },
-              error: (err) => patchState(store, { error: err.error?.detail ?? 'Failed to claim task' }),
+              error: (err) =>
+                patchState(store, { error: err.error?.detail ?? 'Failed to claim task' }),
             }),
           ),
         ),
@@ -189,7 +216,8 @@ export const ProjectsStore = signalStore(
                 const tasks = store.tasks().map((t) => (t.id === taskId ? updated : t));
                 patchState(store, { tasks });
               },
-              error: (err) => patchState(store, { error: err.error?.detail ?? 'Failed to approve task' }),
+              error: (err) =>
+                patchState(store, { error: err.error?.detail ?? 'Failed to approve task' }),
             }),
           ),
         ),
@@ -205,7 +233,8 @@ export const ProjectsStore = signalStore(
                 const tasks = store.tasks().map((t) => (t.id === taskId ? updated : t));
                 patchState(store, { tasks });
               },
-              error: (err) => patchState(store, { error: err.error?.detail ?? 'Failed to reject task' }),
+              error: (err) =>
+                patchState(store, { error: err.error?.detail ?? 'Failed to reject task' }),
             }),
           ),
         ),

@@ -39,7 +39,10 @@ export const TeamsStore = signalStore(
             tap({
               next: (teams) => patchState(store, { teams, loading: false }),
               error: (err) =>
-                patchState(store, { error: err.error?.detail ?? 'Failed to load teams', loading: false }),
+                patchState(store, {
+                  error: err.error?.detail ?? 'Failed to load teams',
+                  loading: false,
+                }),
             }),
           ),
         ),
@@ -54,7 +57,10 @@ export const TeamsStore = signalStore(
             tap({
               next: (team) => patchState(store, { currentTeam: team, loading: false }),
               error: (err) =>
-                patchState(store, { error: err.error?.detail ?? 'Failed to load team', loading: false }),
+                patchState(store, {
+                  error: err.error?.detail ?? 'Failed to load team',
+                  loading: false,
+                }),
             }),
           ),
         ),
@@ -86,7 +92,10 @@ export const TeamsStore = signalStore(
                 onSuccess?.(team);
               },
               error: (err) =>
-                patchState(store, { error: err.error?.detail ?? 'Failed to create team', loading: false }),
+                patchState(store, {
+                  error: err.error?.detail ?? 'Failed to create team',
+                  loading: false,
+                }),
             }),
           ),
         ),
@@ -99,9 +108,9 @@ export const TeamsStore = signalStore(
           api.updateMemberRole(teamId, userId, role).pipe(
             tap({
               next: (updated) => {
-                const members = store.members().map((m) =>
-                  m.user.id === userId ? { ...m, role: updated.role } : m,
-                );
+                const members = store
+                  .members()
+                  .map((m) => (m.user.id === userId ? { ...m, role: updated.role } : m));
                 patchState(store, { members });
               },
               error: (err) =>

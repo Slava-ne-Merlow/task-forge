@@ -1,5 +1,4 @@
 <div class="detail-page">
-
   <!-- Header -->
   <div class="detail-page__header">
     <button tuiButton type="button" appearance="ghost" size="s" (click)="goBack()">
@@ -12,20 +11,15 @@
   } @else if (error() && !task()) {
     <div class="detail-page__error" role="alert">{{ error() }}</div>
   } @else if (task(); as t) {
-
     <div class="detail-layout">
-
       <!-- ── Main content ── -->
       <div class="detail-main">
-
         <!-- Title & badges -->
         <div class="task-header">
           <div class="task-header__badges">
-            <span
-              tuiBadge
-              [appearance]="priorityAppearance[t.priority] ?? 'neutral'"
-              size="s"
-            >{{ t.priority }}</span>
+            <span tuiBadge [appearance]="priorityAppearance[t.priority] ?? 'neutral'" size="s">{{
+              t.priority
+            }}</span>
             <span tuiBadge appearance="neutral" size="s">
               {{ t.status.replace('_', ' ') }}
             </span>
@@ -42,41 +36,70 @@
 
         <!-- Actions — hidden when nothing to show -->
         @if (hasAnyAction()) {
-        <div class="task-actions">
-          @if (canClaim()) {
-            <button tuiButton type="button" appearance="primary" size="m"
-              [loading]="submitting()" (click)="claim()">
-              <tui-icon icon="@tui.user-check" /> Take task
-            </button>
-          }
+          <div class="task-actions">
+            @if (canClaim()) {
+              <button
+                tuiButton
+                type="button"
+                appearance="primary"
+                size="m"
+                [loading]="submitting()"
+                (click)="claim()"
+              >
+                <tui-icon icon="@tui.user-check" /> Take task
+              </button>
+            }
 
-          @if (canAdvance() && nextStatus()) {
-            <button tuiButton type="button" appearance="primary" size="m"
-              [loading]="submitting()" (click)="advance()">
-              Move to {{ nextStatusLabel() }}
-              <tui-icon icon="@tui.arrow-right" />
-            </button>
-          }
+            @if (canAdvance() && nextStatus()) {
+              <button
+                tuiButton
+                type="button"
+                appearance="primary"
+                size="m"
+                [loading]="submitting()"
+                (click)="advance()"
+              >
+                Move to {{ nextStatusLabel() }}
+                <tui-icon icon="@tui.arrow-right" />
+              </button>
+            }
 
-          @if (canLog() && !showLogForm()) {
-            <button tuiButton type="button" appearance="outline" size="m"
-              (click)="showLogForm.set(true)">
-              <tui-icon icon="@tui.clock" /> Log work
-            </button>
-          }
+            @if (canLog() && !showLogForm()) {
+              <button
+                tuiButton
+                type="button"
+                appearance="outline"
+                size="m"
+                (click)="showLogForm.set(true)"
+              >
+                <tui-icon icon="@tui.clock" /> Log work
+              </button>
+            }
 
-          @if (canApproveReject()) {
-            <button tuiButton type="button" appearance="primary" size="m"
-              [loading]="submitting()" (click)="approve()">
-              <tui-icon icon="@tui.check" /> Approve
-            </button>
-            <button tuiButton type="button" appearance="destructive" size="m"
-              (click)="showRejectForm.set(true)">
-              <tui-icon icon="@tui.x" /> Reject
-            </button>
-          }
-        </div>
-        } <!-- end @if hasAnyAction -->
+            @if (canApproveReject()) {
+              <button
+                tuiButton
+                type="button"
+                appearance="primary"
+                size="m"
+                [loading]="submitting()"
+                (click)="approve()"
+              >
+                <tui-icon icon="@tui.check" /> Approve
+              </button>
+              <button
+                tuiButton
+                type="button"
+                appearance="destructive"
+                size="m"
+                (click)="showRejectForm.set(true)"
+              >
+                <tui-icon icon="@tui.x" /> Reject
+              </button>
+            }
+          </div>
+        }
+        <!-- end @if hasAnyAction -->
 
         <!-- Log work form -->
         @if (showLogForm()) {
@@ -85,41 +108,88 @@
             <div class="log-form__row">
               <tui-textfield class="log-form__hours">
                 <label tuiLabel for="log-hours">Hours spent</label>
-                <input id="log-hours" tuiInput type="number" formControlName="hours"
-                  placeholder="e.g. 1.5" min="0" step="0.5" />
+                <input
+                  id="log-hours"
+                  tuiInput
+                  type="number"
+                  formControlName="hours"
+                  placeholder="e.g. 1.5"
+                  min="0"
+                  step="0.5"
+                />
               </tui-textfield>
               <tui-textfield class="log-form__desc">
                 <label tuiLabel for="log-desc">What was done *</label>
-                <input id="log-desc" tuiInput formControlName="description"
-                  placeholder="Describe the work…" />
+                <input
+                  id="log-desc"
+                  tuiInput
+                  formControlName="description"
+                  placeholder="Describe the work…"
+                />
                 <tui-error formControlName="description" [order]="['required']" />
               </tui-textfield>
             </div>
             <div class="log-form__actions">
-              <button tuiButton type="button" appearance="flat" size="s"
-                (click)="showLogForm.set(false); logForm.reset()">Cancel</button>
-              <button tuiButton type="submit" appearance="primary" size="s"
-                [loading]="submitting()">Save</button>
+              <button
+                tuiButton
+                type="button"
+                appearance="flat"
+                size="s"
+                (click)="showLogForm.set(false); logForm.reset()"
+              >
+                Cancel
+              </button>
+              <button
+                tuiButton
+                type="submit"
+                appearance="primary"
+                size="s"
+                [loading]="submitting()"
+              >
+                Save
+              </button>
             </div>
           </form>
         }
 
         <!-- Reject form -->
         @if (showRejectForm()) {
-          <form class="log-form log-form--reject" [formGroup]="rejectForm"
-            (ngSubmit)="submitReject()" novalidate>
+          <form
+            class="log-form log-form--reject"
+            [formGroup]="rejectForm"
+            (ngSubmit)="submitReject()"
+            novalidate
+          >
             <h3 class="log-form__title">Reject & request changes</h3>
             <tui-textfield>
               <label tuiLabel for="reject-comment">Comment *</label>
-              <input id="reject-comment" tuiInput formControlName="comment"
-                placeholder="What needs to be fixed?" />
+              <input
+                id="reject-comment"
+                tuiInput
+                formControlName="comment"
+                placeholder="What needs to be fixed?"
+              />
               <tui-error formControlName="comment" [order]="['required', 'minlength']" />
             </tui-textfield>
             <div class="log-form__actions">
-              <button tuiButton type="button" appearance="flat" size="s"
-                (click)="showRejectForm.set(false); rejectForm.reset()">Cancel</button>
-              <button tuiButton type="submit" appearance="destructive" size="s"
-                [loading]="submitting()">Reject</button>
+              <button
+                tuiButton
+                type="button"
+                appearance="flat"
+                size="s"
+                (click)="showRejectForm.set(false); rejectForm.reset()"
+              >
+                Cancel
+              </button>
+              <button
+                tuiButton
+                type="submit"
+                appearance="destructive"
+                size="s"
+                [loading]="submitting()"
+              >
+                Reject
+              </button>
             </div>
           </form>
         }
@@ -143,7 +213,9 @@
                   <div class="activity__content">
                     <div class="activity__meta">
                       <span class="activity__user">{{ log.user.name }}</span>
-                      <span class="activity__time">{{ log.createdAt | date: 'dd MMM, HH:mm' }}</span>
+                      <span class="activity__time">{{
+                        log.createdAt | date: 'dd MMM, HH:mm'
+                      }}</span>
                       @if (log.hours) {
                         <span tuiBadge appearance="info" size="s">+{{ log.hours }}h</span>
                       }
@@ -155,7 +227,6 @@
             </ol>
           }
         </section>
-
       </div>
 
       <!-- ── Sidebar ── -->
@@ -166,7 +237,9 @@
             <dd>
               @if (t.assignee) {
                 <div class="task-meta__user">
-                  <span class="task-meta__avatar">{{ t.assignee.name.charAt(0).toUpperCase() }}</span>
+                  <span class="task-meta__avatar">{{
+                    t.assignee.name.charAt(0).toUpperCase()
+                  }}</span>
                   {{ t.assignee.name }}
                 </div>
               } @else {
@@ -198,14 +271,17 @@
             <dd class="task-meta__progress">
               <span class="task-meta__hours">
                 {{ t.loggedHours }}h
-                @if (t.estimatedHours) { / {{ t.estimatedHours }}h est. }
+                @if (t.estimatedHours) {
+                  / {{ t.estimatedHours }}h est.
+                }
               </span>
               @if (t.estimatedHours) {
                 <div class="task-meta__bar">
-                  <div class="task-meta__fill"
+                  <div
+                    class="task-meta__fill"
                     [style.width.%]="Math.min(100, (t.loggedHours / t.estimatedHours) * 100)"
-                    [class.task-meta__fill--over]="t.loggedHours > t.estimatedHours">
-                  </div>
+                    [class.task-meta__fill--over]="t.loggedHours > t.estimatedHours"
+                  ></div>
                 </div>
               }
             </dd>
@@ -217,7 +293,6 @@
           </div>
         </dl>
       </aside>
-
     </div>
   }
 </div>

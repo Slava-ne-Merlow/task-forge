@@ -1,5 +1,4 @@
 <div class="board-page">
-
   <!-- Header -->
   <div class="board-page__header">
     <div class="board-page__title-row">
@@ -27,7 +26,10 @@
 
       <!-- Priority filter -->
       <button
-        tuiButton type="button" appearance="outline" size="s"
+        tuiButton
+        type="button"
+        appearance="outline"
+        size="s"
         [tuiDropdown]="priorityMenu"
         [tuiDropdownOpen]="priorityFilterOpen()"
         (tuiDropdownOpenChange)="priorityFilterOpen.set($event)"
@@ -37,16 +39,23 @@
       </button>
       <ng-template #priorityMenu>
         <tui-data-list>
-          <button tuiOption (click)="filterPriority.set(null); priorityFilterOpen.set(false)">All priorities</button>
+          <button tuiOption (click)="filterPriority.set(null); priorityFilterOpen.set(false)">
+            All priorities
+          </button>
           @for (p of priorities; track p.value) {
-            <button tuiOption (click)="filterPriority.set(p.value); priorityFilterOpen.set(false)">{{ p.label }}</button>
+            <button tuiOption (click)="filterPriority.set(p.value); priorityFilterOpen.set(false)">
+              {{ p.label }}
+            </button>
           }
         </tui-data-list>
       </ng-template>
 
       <!-- Assignee filter -->
       <button
-        tuiButton type="button" appearance="outline" size="s"
+        tuiButton
+        type="button"
+        appearance="outline"
+        size="s"
         [tuiDropdown]="assigneeMenu"
         [tuiDropdownOpen]="assigneeFilterOpen()"
         (tuiDropdownOpenChange)="assigneeFilterOpen.set($event)"
@@ -56,29 +65,41 @@
       </button>
       <ng-template #assigneeMenu>
         <tui-data-list>
-          <button tuiOption (click)="filterAssigneeId.set(null); assigneeFilterOpen.set(false)">All members</button>
+          <button tuiOption (click)="filterAssigneeId.set(null); assigneeFilterOpen.set(false)">
+            All members
+          </button>
           @for (m of teamsStore.members(); track m.id) {
-            <button tuiOption (click)="filterAssigneeId.set(m.user.id); assigneeFilterOpen.set(false)">{{ m.user.name }}</button>
+            <button
+              tuiOption
+              (click)="filterAssigneeId.set(m.user.id); assigneeFilterOpen.set(false)"
+            >
+              {{ m.user.name }}
+            </button>
           }
         </tui-data-list>
       </ng-template>
 
       <!-- Sort -->
       <button
-        tuiButton type="button" appearance="outline" size="s"
+        tuiButton
+        type="button"
+        appearance="outline"
+        size="s"
         [tuiDropdown]="sortMenu"
         [tuiDropdownOpen]="sortOpen()"
         (tuiDropdownOpenChange)="sortOpen.set($event)"
       >
         <tui-icon icon="@tui.arrow-up-down" />
-        {{ sortOptions.find(s => s.value === sortBy())?.label ?? 'Sort' }}
+        {{ sortOptions.find((s) => s.value === sortBy())?.label ?? 'Sort' }}
       </button>
       <ng-template #sortMenu>
         <tui-data-list>
           @for (opt of sortOptions; track opt.value) {
-            <button tuiOption
+            <button
+              tuiOption
               [class.tui-option--active]="sortBy() === opt.value"
-              (click)="sortBy.set(opt.value); sortOpen.set(false)">
+              (click)="sortBy.set(opt.value); sortOpen.set(false)"
+            >
               {{ opt.label }}
             </button>
           }
@@ -109,9 +130,12 @@
     <ng-template #createPriorityTpl>
       <tui-data-list>
         @for (p of priorities; track p.value) {
-          <button tuiOption type="button"
+          <button
+            tuiOption
+            type="button"
             [class.tui-option--active]="createForm.get('priority')!.value === p.value"
-            (click)="createForm.get('priority')!.setValue(p.value); createPriorityOpen.set(false)">
+            (click)="createForm.get('priority')!.setValue(p.value); createPriorityOpen.set(false)"
+          >
             {{ p.label }}
           </button>
         }
@@ -120,36 +144,55 @@
 
     <ng-template #createAssigneeTpl>
       <tui-data-list>
-        <button tuiOption type="button"
-          (click)="createForm.get('assigneeId')!.setValue(''); createAssigneeOpen.set(false)">
+        <button
+          tuiOption
+          type="button"
+          (click)="createForm.get('assigneeId')!.setValue(''); createAssigneeOpen.set(false)"
+        >
           Unassigned
         </button>
         @for (m of teamsStore.members(); track m.id) {
-          <button tuiOption type="button"
+          <button
+            tuiOption
+            type="button"
             [class.tui-option--active]="createForm.get('assigneeId')!.value === m.user.id"
-            (click)="createForm.get('assigneeId')!.setValue(m.user.id); createAssigneeOpen.set(false)">
+            (click)="
+              createForm.get('assigneeId')!.setValue(m.user.id); createAssigneeOpen.set(false)
+            "
+          >
             {{ m.user.name }}
           </button>
         }
       </tui-data-list>
     </ng-template>
 
-    <form class="create-card" [formGroup]="createForm" (ngSubmit)="submitCreate()" novalidate aria-label="Create task">
+    <form
+      class="create-card"
+      [formGroup]="createForm"
+      (ngSubmit)="submitCreate()"
+      novalidate
+      aria-label="Create task"
+    >
       <h2 class="create-card__title">New task</h2>
 
       <div class="create-card__grid">
-
         <!-- Left col, row 1: Title -->
         <tui-textfield class="create-card__title-field">
           <label tuiLabel for="task-title">Title *</label>
-          <input id="task-title" tuiInput formControlName="title" placeholder="What needs to be done?" />
+          <input
+            id="task-title"
+            tuiInput
+            formControlName="title"
+            placeholder="What needs to be done?"
+          />
           <tui-error formControlName="title" [order]="['required', 'minlength']" />
         </tui-textfield>
 
         <!-- Right col, rows 1–2: Assignee + Priority -->
         <div class="create-card__sidebar">
           <button
-            class="form-select-btn" type="button"
+            class="form-select-btn"
+            type="button"
             [tuiDropdown]="createAssigneeTpl"
             [tuiDropdownOpen]="createAssigneeOpen()"
             (tuiDropdownOpenChange)="createAssigneeOpen.set($event)"
@@ -163,7 +206,8 @@
           </button>
 
           <button
-            class="form-select-btn" type="button"
+            class="form-select-btn"
+            type="button"
             [tuiDropdown]="createPriorityTpl"
             [tuiDropdownOpen]="createPriorityOpen()"
             (tuiDropdownOpenChange)="createPriorityOpen.set($event)"
@@ -184,21 +228,40 @@
           </tui-textfield>
           <tui-textfield>
             <label tuiLabel for="task-hours">Est. hours</label>
-            <input id="task-hours" tuiInput type="number" formControlName="estimatedHours" placeholder="0" min="0" />
+            <input
+              id="task-hours"
+              tuiInput
+              type="number"
+              formControlName="estimatedHours"
+              placeholder="0"
+              min="0"
+            />
           </tui-textfield>
         </div>
 
         <!-- Full width, row 3: Description -->
         <tui-textfield class="create-card__full">
           <label tuiLabel for="task-desc">Description</label>
-          <input id="task-desc" tuiInput formControlName="description" placeholder="Optional details…" />
+          <input
+            id="task-desc"
+            tuiInput
+            formControlName="description"
+            placeholder="Optional details…"
+          />
         </tui-textfield>
-
       </div>
 
       <div class="create-card__actions">
-        <button tuiButton type="button" appearance="flat" size="m" (click)="cancelCreate()">Cancel</button>
-        <button tuiButton type="submit" appearance="primary" size="m" [loading]="projectsStore.tasksLoading()">
+        <button tuiButton type="button" appearance="flat" size="m" (click)="cancelCreate()">
+          Cancel
+        </button>
+        <button
+          tuiButton
+          type="submit"
+          appearance="primary"
+          size="m"
+          [loading]="projectsStore.tasksLoading()"
+        >
           Create task
         </button>
       </div>
@@ -211,7 +274,14 @@
       <form class="edit-drawer" [formGroup]="editForm" (ngSubmit)="submitEdit()" novalidate>
         <div class="edit-drawer__header">
           <h2 class="edit-drawer__title">Edit task</h2>
-          <button tuiButton type="button" appearance="ghost" size="s" (click)="cancelEdit()" aria-label="Close">
+          <button
+            tuiButton
+            type="button"
+            appearance="ghost"
+            size="s"
+            (click)="cancelEdit()"
+            aria-label="Close"
+          >
             <tui-icon icon="@tui.x" />
           </button>
         </div>
@@ -232,7 +302,11 @@
             <div class="form-dropdown-group">
               <label class="form-dropdown-label">Assignee</label>
               <button
-                tuiButton type="button" appearance="outline" size="m" class="form-dropdown-btn"
+                tuiButton
+                type="button"
+                appearance="outline"
+                size="m"
+                class="form-dropdown-btn"
                 [tuiDropdown]="editAssigneeTpl"
                 [tuiDropdownOpen]="editAssigneeOpen()"
                 (tuiDropdownOpenChange)="editAssigneeOpen.set($event)"
@@ -242,14 +316,22 @@
               </button>
               <ng-template #editAssigneeTpl>
                 <tui-data-list>
-                  <button tuiOption type="button"
-                    (click)="editForm.get('assigneeId')!.setValue(''); editAssigneeOpen.set(false)">
+                  <button
+                    tuiOption
+                    type="button"
+                    (click)="editForm.get('assigneeId')!.setValue(''); editAssigneeOpen.set(false)"
+                  >
                     Unassigned
                   </button>
                   @for (m of teamsStore.members(); track m.id) {
-                    <button tuiOption type="button"
+                    <button
+                      tuiOption
+                      type="button"
                       [class.tui-option--active]="editForm.get('assigneeId')!.value === m.user.id"
-                      (click)="editForm.get('assigneeId')!.setValue(m.user.id); editAssigneeOpen.set(false)">
+                      (click)="
+                        editForm.get('assigneeId')!.setValue(m.user.id); editAssigneeOpen.set(false)
+                      "
+                    >
                       {{ m.user.name }}
                     </button>
                   }
@@ -260,7 +342,11 @@
             <div class="form-dropdown-group">
               <label class="form-dropdown-label">Priority</label>
               <button
-                tuiButton type="button" appearance="outline" size="m" class="form-dropdown-btn"
+                tuiButton
+                type="button"
+                appearance="outline"
+                size="m"
+                class="form-dropdown-btn"
                 [tuiDropdown]="editPriorityTpl"
                 [tuiDropdownOpen]="editPriorityOpen()"
                 (tuiDropdownOpenChange)="editPriorityOpen.set($event)"
@@ -271,9 +357,14 @@
               <ng-template #editPriorityTpl>
                 <tui-data-list>
                   @for (p of priorities; track p.value) {
-                    <button tuiOption type="button"
+                    <button
+                      tuiOption
+                      type="button"
                       [class.tui-option--active]="editForm.get('priority')!.value === p.value"
-                      (click)="editForm.get('priority')!.setValue(p.value); editPriorityOpen.set(false)">
+                      (click)="
+                        editForm.get('priority')!.setValue(p.value); editPriorityOpen.set(false)
+                      "
+                    >
                       {{ p.label }}
                     </button>
                   }
@@ -289,17 +380,31 @@
             </tui-textfield>
             <tui-textfield>
               <label tuiLabel for="edit-est">Est. hours</label>
-              <input id="edit-est" tuiInput type="number" formControlName="estimatedHours" min="0" />
+              <input
+                id="edit-est"
+                tuiInput
+                type="number"
+                formControlName="estimatedHours"
+                min="0"
+              />
             </tui-textfield>
             <tui-textfield>
               <label tuiLabel for="edit-logged">Logged hours</label>
-              <input id="edit-logged" tuiInput type="number" formControlName="loggedHours" min="0" />
+              <input
+                id="edit-logged"
+                tuiInput
+                type="number"
+                formControlName="loggedHours"
+                min="0"
+              />
             </tui-textfield>
           </div>
         </div>
 
         <div class="edit-drawer__footer">
-          <button tuiButton type="button" appearance="flat" size="m" (click)="cancelEdit()">Cancel</button>
+          <button tuiButton type="button" appearance="flat" size="m" (click)="cancelEdit()">
+            Cancel
+          </button>
           <button tuiButton type="submit" appearance="primary" size="m">Save</button>
         </div>
       </form>
@@ -338,5 +443,4 @@
       }
     </div>
   }
-
 </div>

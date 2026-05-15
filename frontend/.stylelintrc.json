@@ -1,0 +1,16 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "rules": {
+    "selector-class-pattern": null,
+    "no-descending-specificity": null,
+    "custom-property-empty-line-before": null,
+    "comment-empty-line-before": null,
+    "alpha-value-notation": null,
+    "color-function-notation": null,
+    "import-notation": null,
+    "declaration-block-no-redundant-longhand-properties": null,
+    "rule-empty-line-before": null,
+    "no-empty-source": null
+  },
+  "ignoreFiles": ["dist/**", "node_modules/**", "src/taiga-structural.css"]
+}

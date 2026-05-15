@@ -11,12 +11,7 @@
       </div>
     }
 
-    <form
-      class="auth-card__form"
-      [formGroup]="form"
-      (ngSubmit)="submit()"
-      novalidate
-    >
+    <form class="auth-card__form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <tui-textfield>
         <label tuiLabel for="login-email">Email</label>
         <input

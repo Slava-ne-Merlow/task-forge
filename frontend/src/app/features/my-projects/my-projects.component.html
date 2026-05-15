@@ -18,8 +18,13 @@
   } @else {
     <ul class="project-grid" aria-label="My projects">
       @for (project of projects(); track project.id) {
-        <li class="project-card" (click)="open(project)" role="button" tabindex="0"
-          (keydown.enter)="open(project)">
+        <li
+          class="project-card"
+          (click)="open(project)"
+          role="button"
+          tabindex="0"
+          (keydown.enter)="open(project)"
+        >
           <div class="project-card__header">
             <h2 class="project-card__name">{{ project.name }}</h2>
             <span tuiBadge appearance="neutral" size="s">

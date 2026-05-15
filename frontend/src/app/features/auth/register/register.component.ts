@@ -23,7 +23,15 @@ const passwordMatchValidator: ValidatorFn = (group: AbstractControl) => {
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, TuiTextfield, TuiInput, TuiButton, TuiButtonLoading, TuiError],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    TuiTextfield,
+    TuiInput,
+    TuiButton,
+    TuiButtonLoading,
+    TuiError,
+  ],
 })
 export class RegisterComponent {
   protected readonly authStore = inject(AuthStore);
@@ -41,8 +49,7 @@ export class RegisterComponent {
 
   protected get passwordMismatch(): boolean {
     return (
-      this.form.errors?.['passwordMismatch'] === true &&
-      this.form.get('confirmPassword')!.touched
+      this.form.errors?.['passwordMismatch'] === true && this.form.get('confirmPassword')!.touched
     );
   }
 

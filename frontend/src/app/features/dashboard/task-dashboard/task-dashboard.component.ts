@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
@@ -35,7 +42,10 @@ export class TaskDashboardComponent implements OnInit {
   ];
 
   private readonly priorityOrder: Record<string, number> = {
-    critical: 0, high: 1, medium: 2, low: 3,
+    critical: 0,
+    high: 1,
+    medium: 2,
+    low: 3,
   };
 
   protected readonly statuses = TASK_STATUSES;
@@ -46,7 +56,9 @@ export class TaskDashboardComponent implements OnInit {
       total: all.length,
       todo: all.filter((t) => t.status === 'todo').length,
       inProgress: all.filter((t) => t.status === 'in_progress').length,
-      overdue: all.filter((t) => t.deadline && new Date(t.deadline) < new Date() && t.status !== 'done').length,
+      overdue: all.filter(
+        (t) => t.deadline && new Date(t.deadline) < new Date() && t.status !== 'done',
+      ).length,
       done: all.filter((t) => t.status === 'done').length,
     };
   });
@@ -61,7 +73,8 @@ export class TaskDashboardComponent implements OnInit {
 
     if (query) {
       filtered = filtered.filter(
-        (t) => t.title.toLowerCase().includes(query) || t.description?.toLowerCase().includes(query),
+        (t) =>
+          t.title.toLowerCase().includes(query) || t.description?.toLowerCase().includes(query),
       );
     }
 

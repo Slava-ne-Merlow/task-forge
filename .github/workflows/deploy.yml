@@ -39,6 +39,10 @@ jobs:
       - name: Copy backend to VPS
         run: |
           rsync -az --delete \
+            --exclude='*.db' \
+            --exclude='*.db-journal' \
+            --exclude='__pycache__/' \
+            --exclude='prod_seed.py' \
             -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
             backend/ \
             root@${{ secrets.VPS_HOST }}:/opt/taskforge/backend/

@@ -26,7 +26,10 @@ describe('ShellComponent', () => {
 
   it('should compute initials from full name', () => {
     const store = (component as any).authStore;
-    store['_state'].update((s: any) => ({ ...s, user: { name: 'John Doe', id: '1', email: 'a@b.com', createdAt: '' } }));
+    store['_state'].update((s: any) => ({
+      ...s,
+      user: { name: 'John Doe', id: '1', email: 'a@b.com', createdAt: '' },
+    }));
     expect((component as any).userInitials).toBe('JD');
   });
 });

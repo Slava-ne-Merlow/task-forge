@@ -4,9 +4,17 @@ import { Task } from '../../../core/models/task.model';
 import { TaskCardComponent } from './task-card.component';
 
 const mockTask: Task = {
-  id: '1', projectId: 'p1', title: 'Test task', description: null,
-  status: 'todo', priority: 'medium',  assignee: null,
-  deadline: null, estimatedHours: null, loggedHours: 0, createdAt: '',
+  id: '1',
+  projectId: 'p1',
+  title: 'Test task',
+  description: null,
+  status: 'todo',
+  priority: 'medium',
+  assignee: null,
+  deadline: null,
+  estimatedHours: null,
+  loggedHours: 0,
+  createdAt: '',
 };
 
 describe('TaskCardComponent', () => {

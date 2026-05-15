@@ -187,7 +187,7 @@ button.active {
   }
 }
 
-@media (max-width: 480px) {
+@media (width <= 480px) {
   .settings-page {
     padding: 1rem;
   }

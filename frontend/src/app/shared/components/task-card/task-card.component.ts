@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { TuiButton, TuiIcon } from '@taiga-ui/core';
 import { TuiBadge } from '@taiga-ui/kit';

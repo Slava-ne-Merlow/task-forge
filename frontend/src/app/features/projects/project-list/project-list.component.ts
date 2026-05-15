@@ -14,7 +14,17 @@ import { ProjectsStore } from '../projects.store';
   templateUrl: './project-list.component.html',
   styleUrl: './project-list.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DatePipe, ReactiveFormsModule, TuiButton, TuiButtonLoading, TuiTextfield, TuiInput, TuiError, TuiBadge, TuiIcon],
+  imports: [
+    DatePipe,
+    ReactiveFormsModule,
+    TuiButton,
+    TuiButtonLoading,
+    TuiTextfield,
+    TuiInput,
+    TuiError,
+    TuiBadge,
+    TuiIcon,
+  ],
 })
 export class ProjectListComponent implements OnInit {
   readonly teamId = input.required<string>();

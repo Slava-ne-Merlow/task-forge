@@ -78,13 +78,19 @@
             <span class="team-card__name">{{ team.name }}</span>
             <span
               tuiBadge
-              [appearance]="team.myRole === 'owner' ? 'primary' : team.myRole === 'lead' ? 'info' : 'neutral'"
+              [appearance]="
+                team.myRole === 'owner' ? 'primary' : team.myRole === 'lead' ? 'info' : 'neutral'
+              "
               size="s"
-            >{{ team.myRole }}</span>
+              >{{ team.myRole }}</span
+            >
           </div>
           <div class="team-card__buttons">
             <button
-              tuiButton type="button" appearance="primary" size="s"
+              tuiButton
+              type="button"
+              appearance="primary"
+              size="s"
               (click)="$event.stopPropagation(); goToProjects(team.id)"
               [attr.aria-label]="'Projects for ' + team.name"
             >
@@ -92,7 +98,10 @@
               Projects
             </button>
             <button
-              tuiButton type="button" appearance="ghost" size="s"
+              tuiButton
+              type="button"
+              appearance="ghost"
+              size="s"
               (click)="$event.stopPropagation(); goToSettings(team.id)"
               [attr.aria-label]="'Settings for ' + team.name"
             >

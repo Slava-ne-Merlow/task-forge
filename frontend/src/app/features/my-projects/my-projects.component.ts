@@ -24,8 +24,14 @@ export class MyProjectsComponent implements OnInit {
 
   ngOnInit(): void {
     this.api.getMyProjects().subscribe({
-      next: (projects) => { this.projects.set(projects); this.loading.set(false); },
-      error: (err) => { this.error.set(err.error?.detail ?? 'Failed to load projects'); this.loading.set(false); },
+      next: (projects) => {
+        this.projects.set(projects);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set(err.error?.detail ?? 'Failed to load projects');
+        this.loading.set(false);
+      },
     });
   }
 

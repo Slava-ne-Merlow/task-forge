@@ -1,8 +1,6 @@
 <div class="auth-page">
   <div class="auth-card">
-
     @switch (pageState()) {
-
       @case ('loading') {
         <div class="auth-card__loader" aria-label="Loading invitation">
           <span class="loader-spinner" aria-hidden="true"></span>
@@ -15,7 +13,13 @@
           <h1 class="auth-card__title">Invalid link</h1>
           <p class="auth-card__subtitle">This invitation link is not valid.</p>
         </div>
-        <a routerLink="/auth/login" tuiButton appearance="primary" size="l" class="auth-card__submit">
+        <a
+          routerLink="/auth/login"
+          tuiButton
+          appearance="primary"
+          size="l"
+          class="auth-card__submit"
+        >
           Go to login
         </a>
       }
@@ -25,31 +29,41 @@
           <h1 class="auth-card__title">Link expired</h1>
           <p class="auth-card__subtitle">This invitation has already been used or has expired.</p>
         </div>
-        <a routerLink="/auth/login" tuiButton appearance="primary" size="l" class="auth-card__submit">
+        <a
+          routerLink="/auth/login"
+          tuiButton
+          appearance="primary"
+          size="l"
+          class="auth-card__submit"
+        >
           Go to login
         </a>
       }
 
       @case ('loaded') {
         @if (invitation(); as inv) {
-
           @if (!memberCheckDone()) {
             <div class="auth-card__loader" aria-label="Loading">
               <span class="loader-spinner" aria-hidden="true"></span>
             </div>
-
           } @else if (isLoggedIn() && alreadyMember()) {
             <div class="auth-card__header">
               <div class="auth-card__check-icon" aria-hidden="true">✓</div>
               <h1 class="auth-card__title">Already in team</h1>
               <p class="auth-card__subtitle">
-                You are already a member of <strong>{{ inv.teamName }}</strong>.
+                You are already a member of <strong>{{ inv.teamName }}</strong
+                >.
               </p>
             </div>
-            <a routerLink="/teams" tuiButton appearance="primary" size="l" class="auth-card__submit">
+            <a
+              routerLink="/teams"
+              tuiButton
+              appearance="primary"
+              size="l"
+              class="auth-card__submit"
+            >
               Go to my teams
             </a>
-
           } @else if (isLoggedIn()) {
             <div class="auth-card__header">
               <h1 class="auth-card__title">You're invited!</h1>
@@ -81,7 +95,6 @@
             <p class="auth-card__footer">
               Wrong account? <a routerLink="/auth/login">Switch account</a>
             </p>
-
           } @else {
             <div class="auth-card__header">
               <h1 class="auth-card__title">You're invited!</h1>
@@ -157,11 +170,8 @@
               <a routerLink="/auth/login">Sign in</a>
             </p>
           }
-
         }
       }
-
     }
-
   </div>
 </div>

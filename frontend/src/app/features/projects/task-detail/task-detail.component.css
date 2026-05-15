@@ -105,8 +105,12 @@
   gap: 0.75rem;
 }
 
-.log-form__hours { flex: 0 0 8rem; }
-.log-form__desc { flex: 1; }
+.log-form__hours {
+  flex: 0 0 8rem;
+}
+.log-form__desc {
+  flex: 1;
+}
 
 .log-form__actions {
   display: flex;
@@ -149,7 +153,7 @@
   content: '';
   position: absolute;
   left: calc(1.25rem - 1px); /* centres on the 2.5rem circle */
-  top: 2.5rem;               /* right below the circle */
+  top: 2.5rem; /* right below the circle */
   bottom: 0.25rem;
   width: 2px;
   background: var(--tui-border-normal);
@@ -163,7 +167,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;           /* fixed size */
+  width: 2.5rem; /* fixed size */
   height: 2.5rem;
   border-radius: 50%;
   background: var(--tui-background-neutral-1);
@@ -178,11 +182,21 @@
   font-size: 1rem;
 }
 
-.activity__icon--approve { color: var(--tui-status-positive); }
-.activity__icon--reject  { color: var(--tui-status-negative); }
-.activity__icon--log     { color: var(--tui-text-action); }
-.activity__icon--claim   { color: var(--tui-status-info); }
-.activity__icon--status_change { color: var(--tui-text-secondary); }
+.activity__icon--approve {
+  color: var(--tui-status-positive);
+}
+.activity__icon--reject {
+  color: var(--tui-status-negative);
+}
+.activity__icon--log {
+  color: var(--tui-text-action);
+}
+.activity__icon--claim {
+  color: var(--tui-status-info);
+}
+.activity__icon--status_change {
+  color: var(--tui-text-secondary);
+}
 
 .activity__content {
   flex: 1;
@@ -236,7 +250,9 @@
   border-bottom: 1px solid var(--tui-border-normal);
 }
 
-.task-meta__item:last-child { border-bottom: none; }
+.task-meta__item:last-child {
+  border-bottom: none;
+}
 
 .task-meta__item dt {
   font-size: 0.75rem;
@@ -272,7 +288,9 @@
   font-weight: 700;
 }
 
-.task-meta__empty { color: var(--tui-text-tertiary); }
+.task-meta__empty {
+  color: var(--tui-text-tertiary);
+}
 
 .task-meta__progress {
   display: flex;
@@ -299,7 +317,9 @@
   transition: width 0.3s;
 }
 
-.task-meta__fill--over { background: var(--tui-status-negative); }
+.task-meta__fill--over {
+  background: var(--tui-status-negative);
+}
 
 /* Spinner */
 .loader-spinner {
@@ -312,10 +332,20 @@
   animation: spin 0.8s linear infinite;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
-@media (max-width: 700px) {
-  .detail-layout { grid-template-columns: 1fr; }
-  .detail-sidebar { position: static; }
-  .log-form__row { flex-direction: column; }
+@media (width <= 700px) {
+  .detail-layout {
+    grid-template-columns: 1fr;
+  }
+  .detail-sidebar {
+    position: static;
+  }
+  .log-form__row {
+    flex-direction: column;
+  }
 }
