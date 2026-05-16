@@ -22,3 +22,21 @@ a {
   color: var(--tui-text-action);
   text-decoration: none;
 }
+
+/*
+  iOS Safari zooms the page when input font-size < 16px.
+  Fix: force 16px, then scale back visually so design stays intact.
+  14 / 16 = 0.875 — matches TaigaUI's --tui-typography-ui-m (~14px).
+  Safe because input[tuiInput] is position:absolute inside tui-textfield,
+  so transform doesn't affect surrounding layout.
+*/
+@media (hover: none) and (pointer: coarse) {
+  input[tuiInput],
+  input[type='search'],
+  input[type='date'],
+  input[type='number'] {
+    font-size: 16px !important;
+    transform: scale(0.875);
+    transform-origin: left center;
+  }
+}
