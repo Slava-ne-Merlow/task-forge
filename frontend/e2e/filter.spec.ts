@@ -4,6 +4,7 @@ const BASE = 'http://localhost:4200';
 
 async function loginAndOpenBoard(page: Page) {
   await page.goto(`${BASE}/auth/login`);
+  await page.locator('input[type="email"]').waitFor({ state: 'visible' });
   await page.locator('input[type="email"]').fill('bob@taskforge.dev');
   await page.locator('input[type="password"]').fill('password123');
   await page.getByRole('button', { name: 'Sign In' }).click();
