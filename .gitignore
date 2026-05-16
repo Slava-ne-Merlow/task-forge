@@ -54,3 +54,4 @@ backend/*.db-journal
 # Keys
 deploy_key.txt
 *.pem
+docs/defense.md
