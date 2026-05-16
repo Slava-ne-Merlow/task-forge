@@ -275,9 +275,14 @@ def update_task(
                 detail="Tasks in Review must be approved by an Owner or Lead"
             )
 
-        # Moving to IN_PROGRESS means "I'm starting work" → must be the assignee
+        # Moving to IN_PROGRESS: task must be assigned, and only to the assignee
         if new_status == TaskStatus.IN_PROGRESS and old_status == TaskStatus.TODO:
-            if task.assignee_id and task.assignee_id != current_user.id:
+            if not task.assignee_id:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Assign the task before starting it"
+                )
+            if task.assignee_id != current_user.id:
                 raise HTTPException(
                     status_code=403,
                     detail="Only the assignee can start this task"

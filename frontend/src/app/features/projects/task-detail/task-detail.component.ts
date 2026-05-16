@@ -115,8 +115,8 @@ export class TaskDetailComponent implements OnInit {
     if (s === 'done') return false;
     // Review → Done: only via approve button
     if (s === 'review') return false;
-    // todo → in_progress: only assignee (or unassigned tasks anyone can start)
-    if (s === 'todo') return isUnassigned || isAssignee;
+    // todo → in_progress: must be assigned first
+    if (s === 'todo') return !isUnassigned && isAssignee;
     // in_progress → review: only the assignee
     if (s === 'in_progress') return isAssignee;
     return false;

@@ -111,10 +111,10 @@ export class ProjectBoardComponent implements OnInit {
     const isAssignee = task.assignee?.id === uid;
     const isUnassigned = !task.assignee;
 
-    // todo → in_progress: only the assignee (or unassigned tasks can be taken by anyone)
+    // todo → in_progress: task must be assigned first (use "Take task" button)
     if (s === 'todo') {
-      if (isUnassigned) return true; // anyone can claim+start
-      return isAssignee; // assigned → only the assignee
+      if (isUnassigned) return false;
+      return isAssignee;
     }
     // in_progress → review: only assignee
     if (s === 'in_progress') return isAssignee;
