@@ -19,7 +19,16 @@ interface TestAccount {
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink, TuiTextfield, TuiInput, TuiButton, TuiButtonLoading, TuiError, TuiBadge],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    TuiTextfield,
+    TuiInput,
+    TuiButton,
+    TuiButtonLoading,
+    TuiError,
+    TuiBadge,
+  ],
 })
 export class LoginComponent {
   protected readonly authStore = inject(AuthStore);
@@ -31,12 +40,48 @@ export class LoginComponent {
   });
 
   protected readonly testAccounts: TestAccount[] = [
-    { name: 'Alice', email: 'alice@taskforge.dev', password: 'password123', role: 'owner', team: 'Frontend' },
-    { name: 'Bob', email: 'bob@taskforge.dev', password: 'password123', role: 'lead', team: 'Frontend' },
-    { name: 'Charlie', email: 'charlie@taskforge.dev', password: 'password123', role: 'dev', team: 'Frontend' },
-    { name: 'Eve', email: 'eve@taskforge.dev', password: 'password123', role: 'owner', team: 'Backend' },
-    { name: 'Frank', email: 'frank@taskforge.dev', password: 'password123', role: 'lead', team: 'Backend' },
-    { name: 'Grace', email: 'grace@taskforge.dev', password: 'password123', role: 'dev', team: 'Backend' },
+    {
+      name: 'Alice',
+      email: 'alice@taskforge.dev',
+      password: 'password123',
+      role: 'owner',
+      team: 'Frontend',
+    },
+    {
+      name: 'Bob',
+      email: 'bob@taskforge.dev',
+      password: 'password123',
+      role: 'lead',
+      team: 'Frontend',
+    },
+    {
+      name: 'Charlie',
+      email: 'charlie@taskforge.dev',
+      password: 'password123',
+      role: 'dev',
+      team: 'Frontend',
+    },
+    {
+      name: 'Eve',
+      email: 'eve@taskforge.dev',
+      password: 'password123',
+      role: 'owner',
+      team: 'Backend',
+    },
+    {
+      name: 'Frank',
+      email: 'frank@taskforge.dev',
+      password: 'password123',
+      role: 'lead',
+      team: 'Backend',
+    },
+    {
+      name: 'Grace',
+      email: 'grace@taskforge.dev',
+      password: 'password123',
+      role: 'dev',
+      team: 'Backend',
+    },
   ];
 
   protected fillAccount(account: TestAccount): void {
