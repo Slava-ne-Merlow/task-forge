@@ -215,6 +215,11 @@ button.active {
   letter-spacing: 0.04em;
 }
 
+.workload-table__head span:not(:first-child) {
+  text-align: center;
+  white-space: nowrap;
+}
+
 .workload-table__row {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr 1fr 2fr;
